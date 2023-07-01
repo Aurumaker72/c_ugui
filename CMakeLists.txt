@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
-project(raylib_todo_list C)
+project(c_ugui C)
 set(CMAKE_C_STANDARD 99)
 
 # Adding Raylib
