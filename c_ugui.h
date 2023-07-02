@@ -34,9 +34,10 @@ typedef struct t_input {
     t_vector2 mouse_position;
     int32_t is_primary_mouse_button_down;
     int32_t *pressed_chars;
-    int32_t pressed_chars_length;
+    size_t pressed_chars_length;
     int32_t *pressed_keycodes;
-    int32_t pressed_keycodes_length;
+    size_t pressed_keycodes_length;
+    t_vector2 mouse_wheel_delta;
 } t_input;
 
 typedef struct t_control {
@@ -56,7 +57,7 @@ typedef struct t_togglebutton {
 
 typedef struct t_textbox {
     char *text;
-    uint32_t text_length;
+    size_t text_length;
 
     int32_t caret_index;
     int32_t selection_start_index;
@@ -67,6 +68,13 @@ typedef struct t_slider {
     float value;
 } t_slider;
 
+typedef struct t_listbox {
+    const char **items;
+    size_t items_length;
+    uint32_t selected_index;
+    float translation;
+} t_listbox;
+
 typedef void (*renderer_draw_button)(t_control, e_visual_state, t_button);
 
 typedef void (*renderer_draw_togglebutton)(t_control, e_visual_state, t_togglebutton);
@@ -74,6 +82,10 @@ typedef void (*renderer_draw_togglebutton)(t_control, e_visual_state, t_togglebu
 typedef void (*renderer_draw_textbox)(t_control, e_visual_state, t_textbox);
 
 typedef void (*renderer_draw_slider)(t_control, e_visual_state, t_slider);
+
+typedef void (*renderer_draw_listbox)(t_control, e_visual_state, t_listbox);
+
+typedef size_t (*renderer_get_listbox_index_from_y)(t_control, t_listbox, float);
 
 typedef t_vector2 (*measure_text)(const char *text);
 
@@ -83,6 +95,8 @@ typedef struct t_renderer {
     renderer_draw_togglebutton draw_togglebutton;
     renderer_draw_textbox draw_textbox;
     renderer_draw_slider draw_slider;
+    renderer_draw_listbox draw_listbox;
+    renderer_get_listbox_index_from_y get_listbox_index_from_y;
 } t_renderer;
 
 int32_t gui_get_focus_uid();
@@ -97,10 +111,21 @@ t_textbox gui_textbox(t_control, t_textbox);
 
 float gui_slider(t_control, t_slider);
 
+t_listbox gui_listbox(t_control, t_listbox);
+
 
 inline static int32_t is_vector2_inside(t_vector2 vector2, t_rectangle rectangle) {
     return vector2.x > rectangle.x && vector2.x < rectangle.x + rectangle.width && vector2.y > rectangle.y &&
            vector2.y < rectangle.y + rectangle.height;
+}
+
+inline static t_rectangle inflate_rectangle(t_rectangle rectangle, float amount) {
+    return (t_rectangle) {
+            rectangle.x - amount,
+            rectangle.y - amount,
+            rectangle.width + amount * 2,
+            rectangle.height + amount * 2,
+    };
 }
 
 #endif //C_UGUI_H

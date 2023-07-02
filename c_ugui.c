@@ -120,17 +120,18 @@ int32_t is_primary_interacting(t_control control) {
                    .rectangle) && control.is_enabled;
 }
 
+
 int32_t gui_get_focus_uid() {
     return focus_uid;
 }
 
 int32_t gui_button(t_control control, t_button button) {
-    renderer->draw_button(control, get_visual_state(control), button);
 
     if (is_primary_interacting(control)) {
         focus_uid = control.uid;
         return 1;
     }
+    renderer->draw_button(control, get_visual_state(control), button);
 
     return 0;
 }
@@ -140,12 +141,12 @@ int32_t gui_togglebutton(t_control control, t_togglebutton togglebutton) {
     if (togglebutton.is_checked && control.is_enabled) {
         visual_state = e_visual_state_active;
     }
-    renderer->draw_togglebutton(control, visual_state, togglebutton);
-
     if (is_primary_interacting(control)) {
         togglebutton.is_checked ^= 1;
         focus_uid = control.uid;
     }
+    renderer->draw_togglebutton(control, visual_state, togglebutton);
+
     return togglebutton.is_checked;
 }
 
@@ -179,10 +180,21 @@ t_textbox gui_textbox(t_control control, t_textbox textbox) {
     }
 
 
-    // insert all pressed chars at the caret index
+    // insert all pressed chars
     for (int i = 0; i < input.pressed_chars_length; ++i) {
-        strinsert(textbox.text, (const char[]) {input.pressed_chars[i], '\0'}, textbox.caret_index);
-        textbox.caret_index++;
+        // if we dont have a selection, replace the selected text with the new char, otherwise just insert it at the caret
+        if (textbox.selection_start_index == textbox.selection_end_index) {
+            strinsert(textbox.text, (const char[]) {input.pressed_chars[i], '\0'}, textbox.caret_index);
+            textbox.caret_index++;
+        } else {
+            int32_t lower_index = imin(textbox.selection_start_index, textbox.selection_end_index);
+            int32_t higher_index = imax(textbox.selection_start_index, textbox.selection_end_index);
+
+            strremslice(textbox.text, lower_index, higher_index);
+            strinsert(textbox.text, (const char[]) {input.pressed_chars[i], '\0'}, lower_index);
+            textbox.caret_index = textbox.selection_start_index = textbox.selection_end_index = higher_index;
+        }
+
     }
 
     // process special inputs
@@ -234,7 +246,6 @@ float gui_slider(t_control control, t_slider slider) {
     if (focus_uid == control.uid) {
         visual_state = e_visual_state_active;
     }
-    renderer->draw_slider(control, visual_state, slider);
 
     if (focus_uid == control.uid && !input.is_primary_mouse_button_down) {
         focus_uid = -1;
@@ -253,6 +264,34 @@ float gui_slider(t_control control, t_slider slider) {
         }
         slider.value = fclamp(slider.value, 0.0f, 1.0f);
     }
+    renderer->draw_slider(control, visual_state, slider);
 
     return slider.value;
+}
+
+t_listbox gui_listbox(t_control control, t_listbox listbox) {
+    if (focus_uid == control.uid && !input.is_primary_mouse_button_down) {
+        focus_uid = -1;
+    }
+    if (is_primary_interacting(control)) {
+        focus_uid = control.uid;
+    }
+    if (focus_uid == control.uid) {
+        // we clamp to one below length, since length is not 0-indexed
+        listbox.selected_index = iclamp(
+                renderer->get_listbox_index_from_y(control, listbox, input.mouse_position.y), 0,
+                listbox.items_length - 1);
+
+    }
+
+    if (control.is_enabled && is_vector2_inside(input.mouse_position, control.rectangle) &&
+        input.mouse_wheel_delta.y != 0) {
+        listbox.translation += input.mouse_wheel_delta.y;
+    }
+
+    listbox.translation = fminf(listbox.translation, 0.0f);
+
+    renderer->draw_listbox(control, e_visual_state_normal, listbox);
+
+    return listbox;
 }

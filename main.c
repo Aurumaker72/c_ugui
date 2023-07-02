@@ -1,6 +1,7 @@
 #include <string.h>
 #include <malloc.h>
 #include <stdio.h>
+#include <math.h>
 #include "raylib.h"
 #include "c_ugui.h"
 
@@ -14,6 +15,16 @@ Font font;
 
 void slice(const char *str, char *result, size_t start, size_t end) {
     strncpy(result, str + start, end - start);
+}
+
+int32_t imin2(int32_t a, int32_t b) {
+    if (a > b) return b;
+    return a;
+}
+
+int32_t imax2(int32_t a, int32_t b) {
+    if (a > b) return a;
+    return b;
 }
 
 t_vector2 raylib_measure_text(const char *text) {
@@ -228,6 +239,61 @@ void raylib_draw_slider(t_control control, e_visual_state visual_state, t_slider
     DrawTexturePro(atlas, thumb_src_rectangle, thumb_dest_rectangle, (Vector2) {0}, 0.0f, WHITE);
 }
 
+const float listbox_item_height = 16.0f;
+
+void raylib_draw_listbox(t_control control, e_visual_state visual_state, t_listbox listbox) {
+    const float padding = 2.0f;
+    NPatchInfo patch_info = (NPatchInfo) {(Rectangle) {36, 6, 3, 3}, 2, 2, 2, 2, NPATCH_NINE_PATCH};
+
+    DrawTextureNPatch(atlas, patch_info, (Rectangle) {
+            .x = control.rectangle.x,
+            .y = control.rectangle.y,
+            .width = control.rectangle.width,
+            .height = control.rectangle.height,
+    }, (Vector2) {0}, 0.0f, WHITE);
+
+    float list_height = listbox_item_height * listbox.items_length;
+
+    size_t index_begin = (listbox.translation * (list_height - control.rectangle.height)) / listbox_item_height;
+    size_t index_end = ((listbox.translation * list_height) + control.rectangle.height) / listbox_item_height;
+
+    index_begin = imax2(index_begin, 0);
+    index_end = imin2(index_end, listbox.items_length);
+
+    BeginScissorMode(control.rectangle.x, control.rectangle.y, control.rectangle.width, control.rectangle.height);
+    for (int i = 0; i < listbox.items_length; ++i) {
+
+        float y = (listbox_item_height * i) -
+                  (listbox.translation * ((listbox_item_height * listbox.items_length) - control.rectangle.height));
+
+        if (listbox.selected_index == i) {
+            NPatchInfo patch_info = (NPatchInfo) {(Rectangle) {34, 11, 5, 5}, 2, 2, 2, 2, NPATCH_NINE_PATCH};
+
+            DrawTextureNPatch(atlas, patch_info, (Rectangle) {
+                    .x = control.rectangle.x,
+                    .y = control.rectangle.y + y,
+                    .width = control.rectangle.width,
+                    .height = listbox_item_height,
+            }, (Vector2) {0}, 0.0f, WHITE);
+        }
+
+        DrawTextEx(font, listbox.items[i], (Vector2) {
+                control.rectangle.x + padding,
+                control.rectangle.y + y,
+        }, font.baseSize, 0.0f, listbox.selected_index == i ? WHITE : BLACK);
+
+    }
+    EndScissorMode();
+}
+
+size_t raylib_get_listbox_index_from_y(t_control control, t_listbox listbox, float mouse_y) {
+    size_t i = floor(((mouse_y - control.rectangle.y) + (listbox.translation *
+                                                         ((listbox_item_height * listbox.items_length) -
+                                                          control.rectangle.height))) /
+                     listbox_item_height);
+    return i;
+}
+
 int main(void) {
     SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_MSAA_4X_HINT);
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, WINDOW_TITLE);
@@ -236,7 +302,9 @@ int main(void) {
             .draw_togglebutton = raylib_draw_togglebutton,
             .draw_textbox = raylib_draw_textbox,
             .draw_slider = raylib_draw_slider,
+            .draw_listbox = raylib_draw_listbox,
             .measure_text = raylib_measure_text,
+            .get_listbox_index_from_y = raylib_get_listbox_index_from_y,
     };
 
     atlas = LoadTexture("assets/windows-10.png");
@@ -251,12 +319,18 @@ int main(void) {
             .selection_end_index = 0,
             .caret_index = 0,
     };
+    const char *strings[] = {"one", "two", "three", "one", "two", "three", "one", "two", "three", "one", "two", "three",
+                             "one", "two", "three"};
+    t_listbox listbox = (t_listbox) {
+            .items = strings,
+            .items_length = sizeof(strings) / sizeof(strings[0]),
+            .selected_index = 0,
+    };
 
     while (!WindowShouldClose()) {
         BeginDrawing();
         ClearBackground(RAYWHITE);
 
-        Vector2 mouse_position = GetMousePosition();
 
         int32_t pressed_chars[255] = {0};
         int32_t pressed_chars_length = 0;
@@ -275,12 +349,13 @@ int main(void) {
         }
 
         gui_begin_frame((t_input) {
-                .mouse_position = (t_vector2) {.x = mouse_position.x, .y = mouse_position.y},
+                .mouse_position = (t_vector2) {.x = GetMousePosition().x, .y = GetMousePosition().y},
                 .is_primary_mouse_button_down = IsMouseButtonDown(0),
                 .pressed_chars = pressed_chars,
                 .pressed_chars_length = pressed_chars_length,
                 .pressed_keycodes = pressed_keycodes,
                 .pressed_keycodes_length = pressed_keycodes_length,
+                .mouse_wheel_delta = (t_vector2) {.x = GetMouseWheelMoveV().x, .y = GetMouseWheelMoveV().y / 2.0f},
         }, &renderer);
 
         if (gui_button((t_control) {
@@ -348,6 +423,17 @@ int main(void) {
         }, (t_slider) {
                 .value = value
         });
+
+        listbox = gui_listbox((t_control) {
+                .uid = 5,
+                .rectangle = (t_rectangle) {
+                        .x = 300,
+                        .y = 120,
+                        .width = 120,
+                        .height = 300
+                },
+                .is_enabled = 1
+        }, listbox);
 
         EndDrawing();
     }
