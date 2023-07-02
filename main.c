@@ -36,9 +36,11 @@ int main(void) {
             .selection_end_index = 0,
             .caret_index = 0,
     };
-    char *strings[100000];
+    char *strings[100];
     for (int i = 0; i < sizeof(strings) / sizeof(strings[0]); ++i) {
-        strings[i] = "abc";
+        char* str = (char*)calloc(260, sizeof(char));
+        sprintf(str, "%d", i);
+        strings[i] = str;
     }
     t_listbox listbox = (t_listbox) {
             .items = strings,
@@ -119,7 +121,7 @@ int main(void) {
                 },
                 .is_enabled = 1
         }, (t_togglebutton) {
-                .text = "abc",
+                .text = "enabled",
                 .is_checked = is_checked
         });
 
@@ -131,7 +133,7 @@ int main(void) {
                         . width = 90,
                         .height = 23
                 },
-                .is_enabled = 1
+                .is_enabled = is_checked
         }, textbox);
 
         value = gui_slider((t_control) {
@@ -142,7 +144,7 @@ int main(void) {
                         .width = 40,
                         .height = 90
                 },
-                .is_enabled = 1
+                .is_enabled = is_checked
         }, (t_slider) {
                 .value = value
         });
@@ -155,7 +157,7 @@ int main(void) {
                         .width = 90,
                         .height = 40
                 },
-                .is_enabled = 1
+                .is_enabled = is_checked
         }, (t_slider) {
                 .value = value
         });
@@ -168,7 +170,7 @@ int main(void) {
                         .width = 120,
                         .height = 300
                 },
-                .is_enabled = 1
+                .is_enabled = is_checked
         }, listbox);
 
         EndDrawing();

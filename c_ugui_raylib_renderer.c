@@ -223,7 +223,7 @@ void raylib_draw_slider(t_control control, e_visual_state visual_state, t_slider
         } else if (visual_state == e_visual_state_active) {
             thumb_src_rectangle = (Rectangle) {53, 22, 19, 11};
         } else {
-            thumb_src_rectangle = (Rectangle) {53, 33, 19, 11};
+            thumb_src_rectangle = (Rectangle) {53, 44, 19, 11};
         }
     }
 
@@ -277,6 +277,12 @@ void raylib_draw_listbox(t_control control, e_visual_state visual_state, t_listb
     BeginScissorMode(control.rectangle.x, control.rectangle.y, control.rectangle.width, control.rectangle.height);
     for (int i = index_begin; i < index_end; ++i) {
 
+        Color text_color;
+        if (control.is_enabled) {
+            text_color = listbox.selected_index == i ? WHITE : BLACK;
+        } else {
+            text_color = (Color) {109, 109, 109, 255};
+        }
         float y = (raylib_listbox_get_item_height() * i) -
                   (listbox.translation *
                    ((raylib_listbox_get_item_height() * listbox.items_length) - control.rectangle.height));
@@ -304,7 +310,7 @@ void raylib_draw_listbox(t_control control, e_visual_state visual_state, t_listb
         DrawTextEx(font, listbox.items[i], (Vector2) {
                 item_rectangle.x + 4.0f,
                 item_rectangle.y + item_rectangle.height / 2 - text_bounds.y / 2,
-        }, font.baseSize, 0.0f, listbox.selected_index == i ? WHITE : BLACK);
+        }, font.baseSize, 0.0f, text_color);
 
     }
     EndScissorMode();

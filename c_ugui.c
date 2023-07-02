@@ -280,7 +280,7 @@ t_listbox gui_listbox(t_control control, t_listbox listbox) {
         float list_height = renderer->listbox_get_item_height() * listbox.items_length;
         float rel_mouse_y = input.mouse_position.y - control.rectangle.y;
         // if the mouse is outside of the control's bounds, we don't allow the selection to change
-        if (rel_mouse_y > 0.0f && rel_mouse_y < control.rectangle.height - renderer->listbox_get_item_height()) {
+        if (rel_mouse_y > 0.0f && rel_mouse_y < control.rectangle.height) {
             // compute the selection index based off of the bounds, mouse position, and translation
             size_t i = floor((rel_mouse_y + (listbox.translation * (list_height - control.rectangle.height))) /
                              renderer->listbox_get_item_height());
