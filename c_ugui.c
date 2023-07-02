@@ -191,7 +191,13 @@ float gui_slider(t_control control, t_slider slider) {
     }
 
     if (focus_uid == control.uid) {
-        slider.value = clamp((input.mouse_position.x - control.rectangle.x) / control.rectangle.width, 0.0f, 1.0f);
+        // if width>height, we have a horizontal slider, otherwise a vertical one
+        if (control.rectangle.width > control.rectangle.height) {
+            slider.value = (input.mouse_position.x - control.rectangle.x) / control.rectangle.width;
+        } else {
+            slider.value = (input.mouse_position.y - control.rectangle.y) / control.rectangle.height;
+        }
+        slider.value = clamp(slider.value, 0.0f, 1.0f);
     }
 
     return slider.value;

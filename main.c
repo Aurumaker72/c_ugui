@@ -158,35 +158,73 @@ void raylib_draw_slider(t_control control, e_visual_state visual_state, t_slider
     const float track_thickness = 4.0f;
     const float thumb_width = 11.0f; // dimensions are 11x9, but for some reason raylib misses the last row of pixels
     const float thumb_height = 19.0f;
+    const int32_t is_horizontal = control.rectangle.width > control.rectangle.height;
+
     NPatchInfo patch_info = (NPatchInfo) {(Rectangle) {36, 1, 3, 3}, 2, 2, 2, 2, NPATCH_NINE_PATCH};
 
+    Rectangle track_rectangle;
 
-    DrawTextureNPatch(atlas, patch_info, (Rectangle) {
-            .x = control.rectangle.x,
-            .y = control.rectangle.y + control.rectangle.height / 2 - track_thickness / 2,
-            .width = control.rectangle.width,
-            .height = track_thickness,
-    }, (Vector2) {0}, 0.0f, WHITE);
-
-
-    Rectangle thumb_rectangle;
-
-    if (visual_state == e_visual_state_normal) {
-        thumb_rectangle = (Rectangle) {40, 0, 11, 19};
-    } else if (visual_state == e_visual_state_hovered) {
-        thumb_rectangle = (Rectangle) {40, 19, 11, 19};
-    } else if (visual_state == e_visual_state_active) {
-        thumb_rectangle = (Rectangle) {40, 38, 11, 19};
+    if (is_horizontal) {
+        track_rectangle = (Rectangle) {
+                .x = control.rectangle.x,
+                .y = control.rectangle.y + control.rectangle.height / 2 - track_thickness / 2,
+                .width = control.rectangle.width,
+                .height = track_thickness,
+        };
     } else {
-        thumb_rectangle = (Rectangle) {40, 76, 11, 19};
+        track_rectangle = (Rectangle) {
+                .x = control.rectangle.x + control.rectangle.width / 2 - track_thickness / 2,
+                .y = control.rectangle.y,
+                .width = track_thickness,
+                .height = control.rectangle.height,
+        };
+    }
+    DrawTextureNPatch(atlas, patch_info, track_rectangle, (Vector2) {0}, 0.0f, WHITE);
+
+
+    Rectangle thumb_src_rectangle;
+
+    if (is_horizontal) {
+        if (visual_state == e_visual_state_normal) {
+            thumb_src_rectangle = (Rectangle) {40, 0, 11, 19};
+        } else if (visual_state == e_visual_state_hovered) {
+            thumb_src_rectangle = (Rectangle) {40, 19, 11, 19};
+        } else if (visual_state == e_visual_state_active) {
+            thumb_src_rectangle = (Rectangle) {40, 38, 11, 19};
+        } else {
+            thumb_src_rectangle = (Rectangle) {40, 76, 11, 19};
+        }
+    } else {
+        if (visual_state == e_visual_state_normal) {
+            thumb_src_rectangle = (Rectangle) {53, 0, 19, 11};
+        } else if (visual_state == e_visual_state_hovered) {
+            thumb_src_rectangle = (Rectangle) {53, 11, 19, 11};
+        } else if (visual_state == e_visual_state_active) {
+            thumb_src_rectangle = (Rectangle) {53, 22, 19, 11};
+        } else {
+            thumb_src_rectangle = (Rectangle) {53, 33, 19, 11};
+        }
     }
 
-    DrawTexturePro(atlas, thumb_rectangle, (Rectangle) {
-            control.rectangle.x + (control.rectangle.width * slider.value) - thumb_width / 2,
-            control.rectangle.y + control.rectangle.height / 2 - thumb_height / 2,
-            thumb_width,
-            thumb_height
-    }, (Vector2) {0}, 0.0f, WHITE);
+
+    Rectangle thumb_dest_rectangle;
+
+    if (is_horizontal) {
+        thumb_dest_rectangle = (Rectangle) {
+                control.rectangle.x + (control.rectangle.width * slider.value) - thumb_width / 2,
+                control.rectangle.y + control.rectangle.height / 2 - thumb_height / 2,
+                thumb_width,
+                thumb_height
+        };
+    } else {
+        thumb_dest_rectangle = (Rectangle) {
+                control.rectangle.x + control.rectangle.width / 2 - thumb_height / 2,
+                control.rectangle.y + (control.rectangle.height * slider.value) - thumb_width / 2,
+                thumb_height,
+                thumb_width
+        };
+    }
+    DrawTexturePro(atlas, thumb_src_rectangle, thumb_dest_rectangle, (Vector2) {0}, 0.0f, WHITE);
 }
 
 int main(void) {
@@ -291,8 +329,21 @@ int main(void) {
                 .rectangle = (t_rectangle) {
                         .x = 10,
                         .y = 120,
-                        . width = 90,
-                        .height = 23
+                        .width = 40,
+                        .height = 90
+                },
+                .is_enabled = 1
+        }, (t_slider) {
+                .value = value
+        });
+
+        value = gui_slider((t_control) {
+                .uid = 4,
+                .rectangle = (t_rectangle) {
+                        .x = 100,
+                        .y = 120,
+                        .width = 90,
+                        .height = 40
                 },
                 .is_enabled = 1
         }, (t_slider) {
