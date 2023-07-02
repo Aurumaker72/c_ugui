@@ -19,6 +19,10 @@ typedef struct t_vector2 {
     float x, y;
 } t_vector2;
 
+typedef struct t_vector2i {
+    int32_t x, y;
+} t_vector2i;
+
 typedef struct t_rectangle {
     float x, y, width, height;
 } t_rectangle;
@@ -85,7 +89,7 @@ typedef void (*renderer_draw_slider)(t_control, e_visual_state, t_slider);
 
 typedef void (*renderer_draw_listbox)(t_control, e_visual_state, t_listbox);
 
-typedef size_t (*renderer_get_listbox_index_from_y)(t_control, t_listbox, float);
+typedef float (*renderer_listbox_get_item_height)();
 
 typedef t_vector2 (*measure_text)(const char *text);
 
@@ -96,7 +100,7 @@ typedef struct t_renderer {
     renderer_draw_textbox draw_textbox;
     renderer_draw_slider draw_slider;
     renderer_draw_listbox draw_listbox;
-    renderer_get_listbox_index_from_y get_listbox_index_from_y;
+    renderer_listbox_get_item_height listbox_get_item_height;
 } t_renderer;
 
 int32_t gui_get_focus_uid();
