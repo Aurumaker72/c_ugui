@@ -27,10 +27,20 @@ int32_t imax2(int32_t a, int32_t b) {
     return b;
 }
 
+Rectangle inflate_rectangle(Rectangle rectangle, float value) {
+    return (Rectangle) {
+            rectangle.x - value,
+            rectangle.y - value,
+            rectangle.width + value * 2,
+            rectangle.height + value * 2,
+    };
+}
+
 t_vector2 raylib_measure_text(const char *text) {
     Vector2 size = MeasureTextEx(font, text, 14.0f, 0.0f);
     return (t_vector2) {size.x, size.y};
 }
+
 
 float caret_x_from_index(const char *text, int32_t caret_index) {
     char *sliced_str = (char *) calloc(strlen(text), sizeof(char));
@@ -64,7 +74,7 @@ void raylib_draw_button(t_control control, e_visual_state visual_state, t_button
             .height = control.rectangle.height,
     }, (Vector2) {0}, 0.0f, WHITE);
 
-    Vector2 text_bounds = MeasureTextEx(font, button.text, 14.0f, 0.0f);
+    Vector2 text_bounds = MeasureTextEx(font, button.text, font.baseSize, 0.0f);
 
     DrawTextEx(font, button.text, (Vector2) {
             control.rectangle.x + control.rectangle.width / 2 - text_bounds.x / 2,
@@ -240,7 +250,7 @@ void raylib_draw_slider(t_control control, e_visual_state visual_state, t_slider
 }
 
 float raylib_listbox_get_item_height() {
-    return font.baseSize;
+    return font.baseSize + 4.0f;
 }
 
 void raylib_draw_listbox(t_control control, e_visual_state visual_state, t_listbox listbox) {
@@ -274,17 +284,26 @@ void raylib_draw_listbox(t_control control, e_visual_state visual_state, t_listb
         if (listbox.selected_index == i) {
             NPatchInfo patch_info = (NPatchInfo) {(Rectangle) {34, 11, 5, 5}, 2, 2, 2, 2, NPATCH_NINE_PATCH};
 
-            DrawTextureNPatch(atlas, patch_info, (Rectangle) {
+            DrawTextureNPatch(atlas, patch_info, inflate_rectangle((Rectangle) {
                     .x = control.rectangle.x,
                     .y = control.rectangle.y + y,
                     .width = control.rectangle.width,
                     .height = raylib_listbox_get_item_height(),
-            }, (Vector2) {0}, 0.0f, WHITE);
+            }, -2.0f), (Vector2) {0}, 0.0f, WHITE);
         }
 
-        DrawTextEx(font, listbox.items[i], (Vector2) {
-                control.rectangle.x + padding,
+        Rectangle item_rectangle = (Rectangle) {
+                control.rectangle.x,
                 control.rectangle.y + y,
+                control.rectangle.width,
+                raylib_listbox_get_item_height()
+        };
+
+        Vector2 text_bounds = MeasureTextEx(font, listbox.items[i], font.baseSize, 0.0f);
+
+        DrawTextEx(font, listbox.items[i], (Vector2) {
+                item_rectangle.x + 4.0f,
+                item_rectangle.y + item_rectangle.height / 2 - text_bounds.y / 2,
         }, font.baseSize, 0.0f, listbox.selected_index == i ? WHITE : BLACK);
 
     }

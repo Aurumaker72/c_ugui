@@ -123,13 +123,4 @@ inline static int32_t is_vector2_inside(t_vector2 vector2, t_rectangle rectangle
            vector2.y < rectangle.y + rectangle.height;
 }
 
-inline static t_rectangle inflate_rectangle(t_rectangle rectangle, float amount) {
-    return (t_rectangle) {
-            rectangle.x - amount,
-            rectangle.y - amount,
-            rectangle.width + amount * 2,
-            rectangle.height + amount * 2,
-    };
-}
-
 #endif //C_UGUI_H
