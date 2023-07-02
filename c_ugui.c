@@ -57,6 +57,11 @@ void strinsert(char *dst, const char *src, size_t index) {
     memcpy(dst + index, src, src_length);
 }
 
+float clamp(float value, float min, float max) {
+    if (value > max) return max;
+    if (value < min) return min;
+    return value;
+}
 
 int32_t get_caret_index_for_relative_position(const char *text, float target) {
     int32_t matching_caret_index = 0;
@@ -153,7 +158,7 @@ t_textbox gui_textbox(t_control control, t_textbox textbox) {
 
     // process special inputs
     for (int i = 0; i < input.pressed_keycodes_length; ++i) {
-        printf("%d\n", input.pressed_keycodes[i]);
+
         if (input.pressed_keycodes[i] == e_keycodes_backspace) {
             // either remove one character behind the caret, or the selection
 
@@ -167,4 +172,27 @@ t_textbox gui_textbox(t_control control, t_textbox textbox) {
     }
 
     return textbox;
+}
+
+float gui_slider(t_control control, t_slider slider) {
+    e_visual_state visual_state = get_visual_state(control);
+    // if we capture the focus, the control has to remain in the active visual state (emulates commctl behaviour)
+    if (focus_uid == control.uid) {
+        visual_state = e_visual_state_active;
+    }
+    renderer->draw_slider(control, visual_state, slider);
+
+    if (focus_uid == control.uid && !input.is_primary_mouse_button_down) {
+        focus_uid = -1;
+    }
+
+    if (is_primary_interacting(control)) {
+        focus_uid = control.uid;
+    }
+
+    if (focus_uid == control.uid) {
+        slider.value = clamp((input.mouse_position.x - control.rectangle.x) / control.rectangle.width, 0.0f, 1.0f);
+    }
+
+    return slider.value;
 }

@@ -154,6 +154,40 @@ void raylib_draw_textbox(t_control control, e_visual_state visual_state, t_textb
     EndScissorMode();
 }
 
+void raylib_draw_slider(t_control control, e_visual_state visual_state, t_slider slider) {
+    const float track_thickness = 4.0f;
+    const float thumb_width = 11.0f; // dimensions are 11x9, but for some reason raylib misses the last row of pixels
+    const float thumb_height = 19.0f;
+    NPatchInfo patch_info = (NPatchInfo) {(Rectangle) {36, 1, 3, 3}, 2, 2, 2, 2, NPATCH_NINE_PATCH};
+
+
+    DrawTextureNPatch(atlas, patch_info, (Rectangle) {
+            .x = control.rectangle.x,
+            .y = control.rectangle.y + control.rectangle.height / 2 - track_thickness / 2,
+            .width = control.rectangle.width,
+            .height = track_thickness,
+    }, (Vector2) {0}, 0.0f, WHITE);
+
+
+    Rectangle thumb_rectangle;
+
+    if (visual_state == e_visual_state_normal) {
+        thumb_rectangle = (Rectangle) {40, 0, 11, 19};
+    } else if (visual_state == e_visual_state_hovered) {
+        thumb_rectangle = (Rectangle) {40, 19, 11, 19};
+    } else if (visual_state == e_visual_state_active) {
+        thumb_rectangle = (Rectangle) {40, 38, 11, 19};
+    } else {
+        thumb_rectangle = (Rectangle) {40, 76, 11, 19};
+    }
+
+    DrawTexturePro(atlas, thumb_rectangle, (Rectangle) {
+            control.rectangle.x + (control.rectangle.width * slider.value) - thumb_width / 2,
+            control.rectangle.y + control.rectangle.height / 2 - thumb_height / 2,
+            thumb_width,
+            thumb_height
+    }, (Vector2) {0}, 0.0f, WHITE);
+}
 
 int main(void) {
     SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_MSAA_4X_HINT);
@@ -162,13 +196,15 @@ int main(void) {
             .draw_button = raylib_draw_button,
             .draw_togglebutton = raylib_draw_togglebutton,
             .draw_textbox = raylib_draw_textbox,
-            .measure_text = raylib_measure_text
+            .draw_slider = raylib_draw_slider,
+            .measure_text = raylib_measure_text,
     };
 
-    atlas = LoadTexture("assets/windows-10.png");
+    atlas = LoadTexture("assets/windows-11.png");
     font = LoadFontEx("assets/micross.ttf", 14, NULL, 250);
 
     int32_t is_checked = 1;
+    float value = 0.5f;
     t_textbox textbox = (t_textbox) {
             .text = (char *) calloc(9000, sizeof(char)),
             .text_length = 9000,
@@ -176,6 +212,7 @@ int main(void) {
             .selection_end_index = 0,
             .caret_index = 0,
     };
+
     while (!WindowShouldClose()) {
         BeginDrawing();
         ClearBackground(RAYWHITE);
@@ -194,7 +231,9 @@ int main(void) {
         int32_t j = 0;
         while (true) {
             pressed_keycodes[i] = GetKeyPressed();
+
             if (!pressed_keycodes[i]) break;
+            printf("%d\n", pressed_keycodes[i]);
             j++;
         }
 
@@ -246,6 +285,19 @@ int main(void) {
                 },
                 .is_enabled = 1
         }, textbox);
+
+        value = gui_slider((t_control) {
+                .uid = 3,
+                .rectangle = (t_rectangle) {
+                        .x = 10,
+                        .y = 120,
+                        . width = 90,
+                        .height = 23
+                },
+                .is_enabled = 1
+        }, (t_slider) {
+                .value = value
+        });
 
         EndDrawing();
     }

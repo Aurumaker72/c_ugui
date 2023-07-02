@@ -95,7 +95,7 @@ int32_t gui_togglebutton(t_control, t_togglebutton);
 
 t_textbox gui_textbox(t_control, t_textbox);
 
-float gui_trackbar(t_control, t_slider);
+float gui_slider(t_control, t_slider);
 
 
 inline static int32_t is_vector2_inside(t_vector2 vector2, t_rectangle rectangle) {
