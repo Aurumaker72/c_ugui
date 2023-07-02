@@ -286,10 +286,12 @@ t_listbox gui_listbox(t_control control, t_listbox listbox) {
 
     if (control.is_enabled && is_vector2_inside(input.mouse_position, control.rectangle) &&
         input.mouse_wheel_delta.y != 0) {
-        listbox.translation += input.mouse_wheel_delta.y;
+        float sign = input.mouse_wheel_delta.y > 0.0f ? -1.0f : 1.0f;
+
+        listbox.translation += (sign != 0.0f ? (20.0f / (20.0f * listbox.items_length)) : 0) * sign;
     }
 
-    listbox.translation = fminf(listbox.translation, 0.0f);
+    listbox.translation = fclamp(listbox.translation, 0.0f, 1.0f);
 
     renderer->draw_listbox(control, e_visual_state_normal, listbox);
 

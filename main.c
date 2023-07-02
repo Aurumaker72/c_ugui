@@ -261,7 +261,7 @@ void raylib_draw_listbox(t_control control, e_visual_state visual_state, t_listb
     index_end = imin2(index_end, listbox.items_length);
 
     BeginScissorMode(control.rectangle.x, control.rectangle.y, control.rectangle.width, control.rectangle.height);
-    for (int i = 0; i < listbox.items_length; ++i) {
+    for (int i = index_begin; i < index_end; ++i) {
 
         float y = (listbox_item_height * i) -
                   (listbox.translation * ((listbox_item_height * listbox.items_length) - control.rectangle.height));
@@ -319,8 +319,10 @@ int main(void) {
             .selection_end_index = 0,
             .caret_index = 0,
     };
-    const char *strings[] = {"one", "two", "three", "one", "two", "three", "one", "two", "three", "one", "two", "three",
-                             "one", "two", "three"};
+    char* strings[50];
+    for (int i = 0; i < sizeof(strings) / sizeof(strings[0]); ++i) {
+        strings[i] = "abc";
+    }
     t_listbox listbox = (t_listbox) {
             .items = strings,
             .items_length = sizeof(strings) / sizeof(strings[0]),
@@ -355,7 +357,7 @@ int main(void) {
                 .pressed_chars_length = pressed_chars_length,
                 .pressed_keycodes = pressed_keycodes,
                 .pressed_keycodes_length = pressed_keycodes_length,
-                .mouse_wheel_delta = (t_vector2) {.x = GetMouseWheelMoveV().x, .y = GetMouseWheelMoveV().y / 2.0f},
+                .mouse_wheel_delta = (t_vector2) {.x = GetMouseWheelMoveV().x, .y = GetMouseWheelMoveV().y},
         }, &renderer);
 
         if (gui_button((t_control) {
