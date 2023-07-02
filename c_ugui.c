@@ -60,6 +60,16 @@ void strremch(char *str, size_t index) {
     memmove(&str[index], &str[index + 1], strlen(str) - index);
 }
 
+void strremslice(char *str, size_t from, size_t to) {
+    size_t len = strlen(str);
+
+    if (from >= len || from >= to || to > len) {
+        return;
+    }
+
+    memmove(str + from, str + to, len - to + 1);
+}
+
 float fclamp(float value, float min, float max) {
     if (value > max) return max;
     if (value < min) return min;
@@ -76,6 +86,7 @@ int32_t imin(int32_t a, int32_t b) {
     if (a > b) return b;
     return a;
 }
+
 int32_t imax(int32_t a, int32_t b) {
     if (a > b) return a;
     return b;
@@ -177,14 +188,21 @@ t_textbox gui_textbox(t_control control, t_textbox textbox) {
     // process special inputs
     for (int i = 0; i < input.pressed_keycodes_length; ++i) {
         if (input.pressed_keycodes[i] == e_keycodes_backspace) {
-            // either remove one character behind the caret, or the selection
-
-            // TODO: implement this
+            // either remove one character behind the caret, or lift out the entire selection
             if (textbox.selection_start_index == textbox.selection_end_index) {
-                strremch(textbox.text, textbox.caret_index - 1);
-                textbox.caret_index--;
-            } else {
 
+                // caret-deletion at index 0 is not possible
+                if (textbox.caret_index > 0) {
+                    strremch(textbox.text, textbox.caret_index - 1);
+                    textbox.caret_index--;
+                }
+
+            } else {
+                int32_t lower_index = imin(textbox.selection_start_index, textbox.selection_end_index);
+                int32_t higher_index = imax(textbox.selection_start_index, textbox.selection_end_index);
+
+                strremslice(textbox.text, lower_index, higher_index);
+                textbox.caret_index = textbox.selection_start_index = textbox.selection_end_index = lower_index;
             }
         } else if (input.pressed_keycodes[i] == e_keycodes_left) {
             // if there's a selection, we nuke it and put the caret at the selection's lower index
