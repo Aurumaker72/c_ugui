@@ -307,7 +307,7 @@ int main(void) {
             .get_listbox_index_from_y = raylib_get_listbox_index_from_y,
     };
 
-    atlas = LoadTexture("assets/windows-10.png");
+    atlas = LoadTexture("assets/windows-11.png");
     font = LoadFontEx("assets/micross.ttf", 14, NULL, 250);
 
     int32_t is_checked = 1;
@@ -319,7 +319,7 @@ int main(void) {
             .selection_end_index = 0,
             .caret_index = 0,
     };
-    char* strings[50];
+    char *strings[50];
     for (int i = 0; i < sizeof(strings) / sizeof(strings[0]); ++i) {
         strings[i] = "abc";
     }
@@ -370,13 +370,30 @@ int main(void) {
                 },
                 .is_enabled = 1
         }, (t_button) {
-                .text = "Ok"
+                .text = "Windows 10"
         })) {
-            SetWindowSize(GetScreenWidth() + 5, GetScreenHeight() + 5);
+            UnloadTexture(atlas);
+            atlas = LoadTexture("assets/windows-10.png");
+        }
+
+        if (gui_button((t_control) {
+                .uid = 1,
+                .rectangle = (t_rectangle) {
+                        .x = 120,
+                        .y = 10,
+                        . width = 90,
+                        .height = 23
+                },
+                .is_enabled = 1
+        }, (t_button) {
+                .text = "Windows 11"
+        })) {
+            UnloadTexture(atlas);
+            atlas = LoadTexture("assets/windows-11.png");
         }
 
         is_checked = gui_togglebutton((t_control) {
-                .uid = 1,
+                .uid = 2,
                 .rectangle = (t_rectangle) {
                         .x = 10,
                         .y = 40,
@@ -390,7 +407,7 @@ int main(void) {
         });
 
         textbox = gui_textbox((t_control) {
-                .uid = 2,
+                .uid = 3,
                 .rectangle = (t_rectangle) {
                         .x = 10,
                         .y = 80,
@@ -401,7 +418,7 @@ int main(void) {
         }, textbox);
 
         value = gui_slider((t_control) {
-                .uid = 3,
+                .uid = 4,
                 .rectangle = (t_rectangle) {
                         .x = 10,
                         .y = 120,
@@ -414,7 +431,7 @@ int main(void) {
         });
 
         value = gui_slider((t_control) {
-                .uid = 4,
+                .uid = 5,
                 .rectangle = (t_rectangle) {
                         .x = 100,
                         .y = 120,
@@ -427,7 +444,7 @@ int main(void) {
         });
 
         listbox = gui_listbox((t_control) {
-                .uid = 5,
+                .uid = 6,
                 .rectangle = (t_rectangle) {
                         .x = 300,
                         .y = 120,
