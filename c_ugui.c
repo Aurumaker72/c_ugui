@@ -18,7 +18,6 @@ void gui_begin_frame(t_input _input, t_renderer *_renderer) {
     last_input = input;
     input = _input;
     renderer = _renderer;
-
     if (input.is_primary_mouse_button_down && !last_input.is_primary_mouse_button_down) {
         primary_mouse_down_position = input.mouse_position;
     }
@@ -57,10 +56,29 @@ void strinsert(char *dst, const char *src, size_t index) {
     memcpy(dst + index, src, src_length);
 }
 
-float clamp(float value, float min, float max) {
+void strremch(char *str, size_t index) {
+    memmove(&str[index], &str[index + 1], strlen(str) - index);
+}
+
+float fclamp(float value, float min, float max) {
     if (value > max) return max;
     if (value < min) return min;
     return value;
+}
+
+int32_t iclamp(int32_t value, int32_t min, int32_t max) {
+    if (value > max) return max;
+    if (value < min) return min;
+    return value;
+}
+
+int32_t imin(int32_t a, int32_t b) {
+    if (a > b) return b;
+    return a;
+}
+int32_t imax(int32_t a, int32_t b) {
+    if (a > b) return a;
+    return b;
 }
 
 int32_t get_caret_index_for_relative_position(const char *text, float target) {
@@ -132,7 +150,7 @@ t_textbox gui_textbox(t_control control, t_textbox textbox) {
     // after this point, only editing and selection operations are performed
     // we can return early here if the control is disabled
     if (!control.is_enabled)
-        return;
+        return textbox;
 
     if (is_primary_interacting(control)) {
         focus_uid = control.uid;
@@ -158,18 +176,36 @@ t_textbox gui_textbox(t_control control, t_textbox textbox) {
 
     // process special inputs
     for (int i = 0; i < input.pressed_keycodes_length; ++i) {
-
         if (input.pressed_keycodes[i] == e_keycodes_backspace) {
             // either remove one character behind the caret, or the selection
 
             // TODO: implement this
             if (textbox.selection_start_index == textbox.selection_end_index) {
-
+                strremch(textbox.text, textbox.caret_index - 1);
+                textbox.caret_index--;
             } else {
 
             }
+        } else if (input.pressed_keycodes[i] == e_keycodes_left) {
+            // if there's a selection, we nuke it and put the caret at the selection's lower index
+            if (textbox.selection_start_index == textbox.selection_end_index) {
+                textbox.caret_index--;
+            } else {
+                textbox.caret_index = imin(textbox.selection_start_index, textbox.selection_end_index);
+                textbox.selection_start_index = textbox.selection_end_index = textbox.caret_index;
+            }
+        } else if (input.pressed_keycodes[i] == e_keycodes_right) {
+            // if there's a selection, we nuke it and put the caret at the selection's higher index
+            if (textbox.selection_start_index == textbox.selection_end_index) {
+                textbox.caret_index++;
+            } else {
+                textbox.caret_index = imax(textbox.selection_start_index, textbox.selection_end_index);
+                textbox.selection_start_index = textbox.selection_end_index = textbox.caret_index;
+            }
         }
     }
+
+    textbox.caret_index = iclamp(textbox.caret_index, 0, strlen(textbox.text));
 
     return textbox;
 }
@@ -197,7 +233,7 @@ float gui_slider(t_control control, t_slider slider) {
         } else {
             slider.value = (input.mouse_position.y - control.rectangle.y) / control.rectangle.height;
         }
-        slider.value = clamp(slider.value, 0.0f, 1.0f);
+        slider.value = fclamp(slider.value, 0.0f, 1.0f);
     }
 
     return slider.value;

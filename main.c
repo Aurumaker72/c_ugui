@@ -58,7 +58,7 @@ void raylib_draw_button(t_control control, e_visual_state visual_state, t_button
     DrawTextEx(font, button.text, (Vector2) {
             control.rectangle.x + control.rectangle.width / 2 - text_bounds.x / 2,
             control.rectangle.y + control.rectangle.height / 2 - text_bounds.y / 2,
-    }, 14.0f, 0.0f, control.is_enabled ? BLACK : (Color) {
+    }, font.baseSize, 0.0f, control.is_enabled ? BLACK : (Color) {
             160,
             160,
             160,
@@ -98,7 +98,7 @@ void raylib_draw_textbox(t_control control, e_visual_state visual_state, t_textb
     DrawTextEx(font, textbox.text, (Vector2) {
             control.rectangle.x,
             control.rectangle.y + control.rectangle.height / 2 - text_bounds.y / 2,
-    }, 14.0f, 0.0f, control.is_enabled ? BLACK : (Color) {
+    }, font.baseSize, 0.0f, control.is_enabled ? BLACK : (Color) {
             160,
             160,
             160,
@@ -150,7 +150,7 @@ void raylib_draw_textbox(t_control control, e_visual_state visual_state, t_textb
     DrawTextEx(font, textbox.text, (Vector2) {
             control.rectangle.x,
             control.rectangle.y + control.rectangle.height / 2 - text_bounds.y / 2,
-    }, 14.0f, 0.0f, WHITE);
+    }, font.baseSize, 0.0f, WHITE);
     EndScissorMode();
 }
 
@@ -218,7 +218,8 @@ void raylib_draw_slider(t_control control, e_visual_state visual_state, t_slider
         };
     } else {
         thumb_dest_rectangle = (Rectangle) {
-                control.rectangle.x + control.rectangle.width / 2 - thumb_height / 2,
+                control.rectangle.x + control.rectangle.width / 2 - thumb_height / 2 -
+                1,// TODO: this alignment hack exists due to raylib incorrectly drawing the thumb image
                 control.rectangle.y + (control.rectangle.height * slider.value) - thumb_width / 2,
                 thumb_height,
                 thumb_width
@@ -238,7 +239,7 @@ int main(void) {
             .measure_text = raylib_measure_text,
     };
 
-    atlas = LoadTexture("assets/windows-11.png");
+    atlas = LoadTexture("assets/windows-10.png");
     font = LoadFontEx("assets/micross.ttf", 14, NULL, 250);
 
     int32_t is_checked = 1;
@@ -258,30 +259,28 @@ int main(void) {
         Vector2 mouse_position = GetMousePosition();
 
         int32_t pressed_chars[255] = {0};
-        int32_t i = 0;
+        int32_t pressed_chars_length = 0;
         while (true) {
-            pressed_chars[i] = GetCharPressed();
-            if (!pressed_chars[i]) break;
-            i++;
+            pressed_chars[pressed_chars_length] = GetCharPressed();
+            if (!pressed_chars[pressed_chars_length]) break;
+            pressed_chars_length++;
         }
 
         int32_t pressed_keycodes[255] = {0};
-        int32_t j = 0;
+        int32_t pressed_keycodes_length = 0;
         while (true) {
-            pressed_keycodes[i] = GetKeyPressed();
-
-            if (!pressed_keycodes[i]) break;
-            printf("%d\n", pressed_keycodes[i]);
-            j++;
+            pressed_keycodes[pressed_keycodes_length] = GetKeyPressed();
+            if (!pressed_keycodes[pressed_keycodes_length]) break;
+            pressed_keycodes_length++;
         }
 
         gui_begin_frame((t_input) {
                 .mouse_position = (t_vector2) {.x = mouse_position.x, .y = mouse_position.y},
                 .is_primary_mouse_button_down = IsMouseButtonDown(0),
                 .pressed_chars = pressed_chars,
-                .pressed_chars_length = i,
+                .pressed_chars_length = pressed_chars_length,
                 .pressed_keycodes = pressed_keycodes,
-                .pressed_keycodes_length = j,
+                .pressed_keycodes_length = pressed_keycodes_length,
         }, &renderer);
 
         if (gui_button((t_control) {
