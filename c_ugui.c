@@ -313,3 +313,8 @@ void gui_progresbar(t_control control, t_progressbar progress_bar) {
     renderer->draw_progressbar(control, control.is_enabled ? e_visual_state_normal : e_visual_state_disabled,
                                progress_bar);
 }
+
+t_treeview gui_treeview(t_control control, t_treeview treeview) {
+    renderer->draw_treeview(control, e_visual_state_normal, treeview);
+    return treeview;
+}

@@ -24,6 +24,7 @@ int main(void) {
             .measure_text = raylib_measure_text,
             .listbox_get_item_height = raylib_listbox_get_item_height,
             .draw_progressbar = raylib_draw_progressbar,
+            .draw_treeview = raylib_draw_treeview,
     };
 
     raylib_load_theme("assets/windows-10.png", "assets/micross.ttf");
@@ -47,6 +48,32 @@ int main(void) {
             .items = strings,
             .items_length = sizeof(strings) / sizeof(strings[0]),
             .selected_index = 0,
+    };
+    t_treeview treeview = (t_treeview) {
+            .root_node = (t_node) {
+                    .text = "Root",
+                    .children_length = 3,
+                    .children = (t_node[]) {
+                            (t_node) {
+                                    .text = "Root 1"
+                            },
+                            (t_node) {
+                                    .text = "Root 2"
+                            },
+                            (t_node) {
+                                    .text = "I'm an alcoholic",
+                                    .children_length = 2,
+                                    .children = (t_node[]) {
+                                            (t_node) {
+                                                    .text = "I'm an alcoholic 2"
+                                            },
+                                            (t_node) {
+                                                    .text = "I'm an alcoholic 3"
+                                            },
+                                    }
+                            }
+                    }
+            }
     };
 
     while (!WindowShouldClose()) {
@@ -185,6 +212,17 @@ int main(void) {
         }, (t_progressbar) {
                 .progress = some_range_value
         });
+
+        treeview = gui_treeview((t_control) {
+                .uid = 8,
+                .rectangle = (t_rectangle) {
+                        .x = 500,
+                        .y = 120,
+                        .width = 120,
+                        .height = 300
+                },
+                .is_enabled = is_checked
+        }, treeview);
 
         EndDrawing();
     }

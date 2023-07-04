@@ -83,6 +83,16 @@ typedef struct t_progressbar {
     float progress;
 } t_progressbar;
 
+typedef struct t_node {
+    struct t_node* children;
+    size_t children_length;
+    const char* text;
+} t_node;
+
+typedef struct t_treeview {
+    t_node root_node;
+} t_treeview;
+
 typedef void (*renderer_draw_button)(t_control, e_visual_state, t_button);
 
 typedef void (*renderer_draw_togglebutton)(t_control, e_visual_state, t_togglebutton);
@@ -94,6 +104,7 @@ typedef void (*renderer_draw_slider)(t_control, e_visual_state, t_slider);
 typedef void (*renderer_draw_listbox)(t_control, e_visual_state, t_listbox);
 
 typedef void (*renderer_draw_progressbar)(t_control, e_visual_state, t_progressbar);
+typedef void (*renderer_draw_treeview)(t_control, e_visual_state, t_treeview);
 
 typedef float (*renderer_listbox_get_item_height)();
 
@@ -108,6 +119,7 @@ typedef struct t_renderer {
     renderer_draw_listbox draw_listbox;
     renderer_listbox_get_item_height listbox_get_item_height;
     renderer_draw_progressbar draw_progressbar;
+    renderer_draw_treeview draw_treeview;
 } t_renderer;
 
 int32_t gui_get_focus_uid();
@@ -125,6 +137,8 @@ float gui_slider(t_control, t_slider);
 t_listbox gui_listbox(t_control, t_listbox);
 
 void gui_progresbar(t_control, t_progressbar);
+
+t_treeview gui_treeview(t_control, t_treeview);
 
 inline static int32_t is_vector2_inside(t_vector2 vector2, t_rectangle rectangle) {
     return vector2.x > rectangle.x && vector2.x < rectangle.x + rectangle.width && vector2.y > rectangle.y &&
