@@ -19,6 +19,7 @@ void raylib_draw_textbox(t_control, e_visual_state, t_textbox);
 void raylib_draw_slider(t_control, e_visual_state, t_slider);
 
 void raylib_draw_listbox(t_control, e_visual_state, t_listbox);
+void raylib_draw_progressbar(t_control, e_visual_state, t_progressbar);
 
 t_vector2 raylib_measure_text(const char *);
 

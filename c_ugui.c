@@ -127,11 +127,12 @@ int32_t gui_get_focus_uid() {
 
 int32_t gui_button(t_control control, t_button button) {
 
+    renderer->draw_button(control, get_visual_state(control), button);
+
     if (is_primary_interacting(control)) {
         focus_uid = control.uid;
         return 1;
     }
-    renderer->draw_button(control, get_visual_state(control), button);
 
     return 0;
 }
@@ -306,4 +307,9 @@ t_listbox gui_listbox(t_control control, t_listbox listbox) {
     renderer->draw_listbox(control, e_visual_state_normal, listbox);
 
     return listbox;
+}
+
+void gui_progresbar(t_control control, t_progressbar progress_bar) {
+    renderer->draw_progressbar(control, control.is_enabled ? e_visual_state_normal : e_visual_state_disabled,
+                               progress_bar);
 }

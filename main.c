@@ -23,12 +23,13 @@ int main(void) {
             .draw_listbox = raylib_draw_listbox,
             .measure_text = raylib_measure_text,
             .listbox_get_item_height = raylib_listbox_get_item_height,
+            .draw_progressbar = raylib_draw_progressbar,
     };
 
     raylib_load_theme("assets/windows-10.png", "assets/micross.ttf");
 
     int32_t is_checked = 1;
-    float value = 0.5f;
+    float some_range_value = 0.5f;
     t_textbox textbox = (t_textbox) {
             .text = (char *) calloc(9000, sizeof(char)),
             .text_length = 9000,
@@ -38,7 +39,7 @@ int main(void) {
     };
     char *strings[100];
     for (int i = 0; i < sizeof(strings) / sizeof(strings[0]); ++i) {
-        char* str = (char*)calloc(260, sizeof(char));
+        char *str = (char *) calloc(260, sizeof(char));
         sprintf(str, "%d", i);
         strings[i] = str;
     }
@@ -136,7 +137,7 @@ int main(void) {
                 .is_enabled = is_checked
         }, textbox);
 
-        value = gui_slider((t_control) {
+        some_range_value = gui_slider((t_control) {
                 .uid = 4,
                 .rectangle = (t_rectangle) {
                         .x = 10,
@@ -146,10 +147,10 @@ int main(void) {
                 },
                 .is_enabled = is_checked
         }, (t_slider) {
-                .value = value
+                .value = some_range_value
         });
 
-        value = gui_slider((t_control) {
+        some_range_value = gui_slider((t_control) {
                 .uid = 5,
                 .rectangle = (t_rectangle) {
                         .x = 100,
@@ -159,7 +160,7 @@ int main(void) {
                 },
                 .is_enabled = is_checked
         }, (t_slider) {
-                .value = value
+                .value = some_range_value
         });
 
         listbox = gui_listbox((t_control) {
@@ -172,6 +173,18 @@ int main(void) {
                 },
                 .is_enabled = is_checked
         }, listbox);
+        gui_progresbar((t_control) {
+                .uid = 7,
+                .rectangle = (t_rectangle) {
+                        .x = 150,
+                        .y = 300,
+                        .width = 120,
+                        .height = 25
+                },
+                .is_enabled = is_checked
+        }, (t_progressbar) {
+                .progress = some_range_value
+        });
 
         EndDrawing();
     }

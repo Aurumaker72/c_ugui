@@ -271,8 +271,10 @@ void raylib_draw_listbox(t_control control, e_visual_state visual_state, t_listb
     size_t index_end =
             ((listbox.translation * list_height) + control.rectangle.height) / raylib_listbox_get_item_height();
 
-    index_begin = imax2(index_begin, 0);
-    index_end = imin2(index_end, listbox.items_length);
+    // we extend the range by one,
+    // then clamp it to the actual indicies, as not to read oob
+    index_begin = imax2(index_begin - 1, 0);
+    index_end = imin2(index_end + 1, listbox.items_length);
 
     BeginScissorMode(control.rectangle.x, control.rectangle.y, control.rectangle.width, control.rectangle.height);
     for (int i = index_begin; i < index_end; ++i) {
@@ -324,4 +326,24 @@ void raylib_load_theme(const char *atlas_path, const char *font_path) {
 void raylib_unload() {
     UnloadTexture(atlas);
     UnloadFont(font);
+}
+
+void raylib_draw_progressbar(t_control control, e_visual_state visual_state, t_progressbar progress_bar) {
+    NPatchInfo patch_info = (NPatchInfo) {(Rectangle) {88, 1, 11, 9}, 6, 5, 6, 5, NPATCH_NINE_PATCH};
+
+    DrawTextureNPatch(atlas, patch_info, (Rectangle) {
+            .x = control.rectangle.x,
+            .y = control.rectangle.y,
+            .width = control.rectangle.width,
+            .height = control.rectangle.height,
+    }, (Vector2) {0}, 0.0f, WHITE);
+
+    patch_info = (NPatchInfo) {(Rectangle) {88, 11, 11, 9}, 6, 5, 6, 5, NPATCH_NINE_PATCH};
+
+    DrawTextureNPatch(atlas, patch_info, inflate_rectangle((Rectangle) {
+            .x = control.rectangle.x,
+            .y = control.rectangle.y,
+            .width = control.rectangle.width * progress_bar.progress,
+            .height = control.rectangle.height,
+    }, -1), (Vector2) {0}, 0.0f, WHITE);
 }
