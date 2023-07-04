@@ -87,6 +87,7 @@ typedef struct t_node {
     struct t_node* children;
     size_t children_length;
     const char* text;
+    int32_t is_expanded;
 } t_node;
 
 typedef struct t_treeview {

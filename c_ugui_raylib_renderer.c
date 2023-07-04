@@ -352,17 +352,17 @@ void raylib_draw_progressbar(t_control control, e_visual_state visual_state, t_p
 }
 
 void draw_node(t_control control, t_node node, size_t index, size_t subdepth) {
-    float x = control.rectangle.x + (10 * subdepth);
-    float y = control.rectangle.y + (10 * index);
-    DrawTextEx(font, node.text, (Vector2) {x, y}, font.baseSize, 0.0f, control.is_enabled ? BLACK : (Color) {109, 109, 109, 255});
+    float x = control.rectangle.x + (16 * subdepth);
+    float y = control.rectangle.y + (16 * index);
+    DrawTextEx(font, node.text, (Vector2) {x, y}, font.baseSize, 0.0f,
+               control.is_enabled ? BLACK : (Color) {109, 109, 109, 255});
 }
 
 void walk_tree(t_control control, const t_node *node, size_t accumulator, size_t subdepth) {
-    printf("[%d, %d] %s\n", accumulator, subdepth, node->text);
-
     subdepth++;
     draw_node(control, *node, accumulator, subdepth);
-
+    if (!node->is_expanded)
+        return;
     for (size_t i = 0; i < node->children_length; i++) {
         walk_tree(control, &node->children[i], ++accumulator, subdepth);
     }

@@ -53,22 +53,28 @@ int main(void) {
             .root_node = (t_node) {
                     .text = "Root",
                     .children_length = 3,
+                    .is_expanded = 1,
                     .children = (t_node[]) {
                             (t_node) {
-                                    .text = "Root 1"
+                                    .text = "Root 1",
+                                    .is_expanded = 1,
                             },
                             (t_node) {
-                                    .text = "Root 2"
+                                    .text = "Root 2",
+                                    .is_expanded = 1,
                             },
                             (t_node) {
                                     .text = "I'm an alcoholic",
                                     .children_length = 2,
+                                    .is_expanded = 1,
                                     .children = (t_node[]) {
                                             (t_node) {
-                                                    .text = "I'm an alcoholic 2"
+                                                    .text = "I'm an alcoholic 2",
+                                                    .is_expanded = 1,
                                             },
                                             (t_node) {
-                                                    .text = "I'm an alcoholic 3"
+                                                    .text = "I'm an alcoholic 3",
+                                                    .is_expanded = 1,
                                             },
                                     }
                             }
@@ -216,9 +222,9 @@ int main(void) {
         treeview = gui_treeview((t_control) {
                 .uid = 8,
                 .rectangle = (t_rectangle) {
-                        .x = 500,
+                        .x = 450,
                         .y = 120,
-                        .width = 120,
+                        .width = 250,
                         .height = 300
                 },
                 .is_enabled = is_checked

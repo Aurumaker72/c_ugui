@@ -314,7 +314,44 @@ void gui_progresbar(t_control control, t_progressbar progress_bar) {
                                progress_bar);
 }
 
+void gui_draw_node(t_control control, t_node *node, size_t index, size_t subdepth) {
+    if (node->children_length == 0) return;
+
+    float x = control.rectangle.x + (16 * (subdepth - 1));
+    float y = control.rectangle.y + (16 * index);
+    if (gui_button((t_control) {
+            .uid  = control.uid * 1024,
+            .rectangle = (t_rectangle) {
+                    .x = x,
+                    .y = y,
+                    .width = 16,
+                    .height = 16
+            },
+            .is_enabled = control.is_enabled
+    }, (t_button) {
+            .text = node->is_expanded ? "-" : "+"
+    })) {
+        node->is_expanded ^= 1;
+    }
+}
+
+void gui_walk_tree(t_control control, t_node *node, size_t accumulator, size_t subdepth) {
+
+
+    subdepth++;
+    gui_draw_node(control, node, accumulator, subdepth);
+
+    if (!node->is_expanded)
+        return;
+    for (size_t i = 0; i < node->children_length; i++) {
+        gui_walk_tree(control, &node->children[i], ++accumulator, subdepth);
+    }
+}
+
 t_treeview gui_treeview(t_control control, t_treeview treeview) {
     renderer->draw_treeview(control, e_visual_state_normal, treeview);
+
+    gui_walk_tree(control, &treeview.root_node, 0, 0);
+
     return treeview;
 }
