@@ -84,7 +84,7 @@ int main(void) {
 
     while (!WindowShouldClose()) {
         BeginDrawing();
-        ClearBackground(RAYWHITE);
+        ClearBackground((Color) { 240, 240, 240, 255});
 
 
         int32_t pressed_chars[255] = {0};
