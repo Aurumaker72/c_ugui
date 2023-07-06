@@ -54,7 +54,7 @@ t_visual_style get_windows_10_visual_style() {
     visual_style.progressbar_bars[2] = (NPatchInfo) {(Rectangle) {88, 11, 11, 9}, 6, 5, 6, 5, NPATCH_NINE_PATCH};
     visual_style.progressbar_bars[3] = (NPatchInfo) {(Rectangle) {88, 11, 11, 9}, 6, 5, 6, 5, NPATCH_NINE_PATCH};
 
-
+    visual_style.list_content_padding = (Vector2) {4, 0};
     return visual_style;
 }
 

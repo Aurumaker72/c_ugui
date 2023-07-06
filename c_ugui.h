@@ -88,6 +88,7 @@ typedef struct t_node {
     size_t children_length;
     const char *text;
     int32_t is_expanded;
+    int32_t is_selected;
 } t_node;
 
 typedef struct t_treeview {

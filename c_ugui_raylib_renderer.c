@@ -244,12 +244,13 @@ void raylib_draw_listbox(t_control control, e_visual_state visual_state, t_listb
                    ((raylib_listbox_get_item_height() * listbox.items_length) - control.rectangle.height));
 
         if (listbox.selected_index == i) {
-            DrawTextureNPatch(visual_style.texture, visual_style.list_selected_frames[visual_state], inflate_rectangle((Rectangle) {
-                    .x = control.rectangle.x,
-                    .y = control.rectangle.y + y,
-                    .width = control.rectangle.width,
-                    .height = raylib_listbox_get_item_height(),
-            }, -2.0f), (Vector2) {0}, 0.0f, WHITE);
+            DrawTextureNPatch(visual_style.texture, visual_style.list_selected_frames[visual_state],
+                              inflate_rectangle((Rectangle) {
+                                      .x = control.rectangle.x,
+                                      .y = control.rectangle.y + y,
+                                      .width = control.rectangle.width,
+                                      .height = raylib_listbox_get_item_height(),
+                              }, -2.0f), (Vector2) {0}, 0.0f, WHITE);
         }
 
         Rectangle item_rectangle = (Rectangle) {
@@ -262,8 +263,9 @@ void raylib_draw_listbox(t_control control, e_visual_state visual_state, t_listb
         Vector2 text_bounds = MeasureTextEx(visual_style.font, listbox.items[i], visual_style.font.baseSize, 0.0f);
 
         DrawTextEx(visual_style.font, listbox.items[i], (Vector2) {
-                item_rectangle.x + 4.0f,
-                item_rectangle.y + item_rectangle.height / 2 - text_bounds.y / 2,
+                (item_rectangle.x) + visual_style.list_content_padding.x,
+                (item_rectangle.y + item_rectangle.height / 2 - text_bounds.y / 2) +
+                visual_style.list_content_padding.y,
         }, visual_style.font.baseSize, 0.0f, text_color);
 
     }
@@ -295,19 +297,27 @@ raylib_draw_treeview_node(t_control control, e_visual_state visual_state, t_node
     float x = control.rectangle.x + (raylib_listbox_get_item_height() * subdepth);
     float y = control.rectangle.y + (raylib_listbox_get_item_height() * index);
 
+
     Vector2 text_bounds = MeasureTextEx(visual_style.font, node.text, visual_style.font.baseSize, 0.0f);
 
+
     Rectangle node_rectangle = (Rectangle) {
-            .x = x,
-            .y = y,
+            .x = x + visual_style.list_content_padding.x,
+            .y = y + visual_style.list_content_padding.y,
             .width = text_bounds.x,
             .height = raylib_listbox_get_item_height(),
     };
 
+    if (node.is_selected) {
+        DrawTextureNPatch(visual_style.texture, visual_style.list_selected_frames[visual_state], node_rectangle,
+                          (Vector2) {0}, 0.0f, WHITE);
+    }
+
     DrawTextEx(visual_style.font, node.text, (Vector2) {
-            node_rectangle.x + node_rectangle.width / 2 - text_bounds.x / 2,
-            node_rectangle.y + node_rectangle.height / 2 - text_bounds.y / 2,
-    }, visual_style.font.baseSize, 0.0f, control.is_enabled ? BLACK : (Color) {109, 109, 109, 255});
+                       node_rectangle.x + node_rectangle.width / 2 - text_bounds.x / 2,
+                       node_rectangle.y + node_rectangle.height / 2 - text_bounds.y / 2
+               }, visual_style.font.baseSize, 0.0f,
+               control.is_enabled ? (node.is_selected ? WHITE : BLACK) : (Color) {109, 109, 109, 255});
 }
 
 void raylib_set_visual_style(t_visual_style _visual_style) {

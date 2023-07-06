@@ -19,6 +19,7 @@ typedef struct t_visual_style {
     Rectangle slider_horizontal_thumbs[4];
     Rectangle slider_vertical_thumbs[4];
     NPatchInfo progressbar_bars[4];
+    Vector2 list_content_padding;
 } t_visual_style;
 
 void raylib_unload_visual_style(void);

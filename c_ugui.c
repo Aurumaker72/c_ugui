@@ -305,7 +305,7 @@ t_listbox gui_listbox(t_control control, t_listbox listbox) {
         input.mouse_wheel_delta.y != 0) {
 
         // we dont allow scrolling if the content doesnt overflow
-        float list_height =  listbox.items_length * renderer->listbox_get_item_height();
+        float list_height = listbox.items_length * renderer->listbox_get_item_height();
         if (list_height > control.rectangle.height) {
             float sign = input.mouse_wheel_delta.y > 0.0f ? -1.0f : 1.0f;
 
@@ -313,8 +313,6 @@ t_listbox gui_listbox(t_control control, t_listbox listbox) {
                                                     (renderer->listbox_get_item_height() * listbox.items_length)) : 0) *
                                    sign;
         }
-
-
     }
 
     listbox.translation = fclamp(listbox.translation, 0.0f, 1.0f);
@@ -329,7 +327,8 @@ void gui_progresbar(t_control control, t_progressbar progress_bar) {
                                progress_bar);
 }
 
-void gui_draw_node(t_control control, e_visual_state visual_state, t_node *node, size_t index, size_t subdepth) {
+void gui_draw_node(t_control control, e_visual_state visual_state, t_node *node, size_t index, size_t subdepth,
+                   int32_t *was_handled) {
     renderer->draw_treeview_node(control, visual_state, *node, index, subdepth);
 
     if (node->children_length == 0) return;
@@ -337,7 +336,7 @@ void gui_draw_node(t_control control, e_visual_state visual_state, t_node *node,
     float x = control.rectangle.x + (renderer->listbox_get_item_height() * (subdepth - 1));
     float y = control.rectangle.y + (renderer->listbox_get_item_height() * index);
     if (gui_button((t_control) {
-            .uid  = control.uid * 1024,
+            .uid  = control.uid * 1024 * index * subdepth,
             .rectangle = (t_rectangle) {
                     .x = x,
                     .y = y,
@@ -348,22 +347,38 @@ void gui_draw_node(t_control control, e_visual_state visual_state, t_node *node,
     }, (t_button) {
             .text = node->is_expanded ? "-" : "+"
     })) {
+        *was_handled = 1;
         node->is_expanded ^= 1;
     }
 
 }
 
-void gui_walk_tree(t_control control, e_visual_state visual_state, t_node *node, size_t accumulator, size_t subdepth) {
+void gui_walk_tree(t_control control, e_visual_state visual_state, t_node *node, size_t accumulator, size_t subdepth,
+                   size_t *length, int32_t *was_handled) {
     subdepth++;
-    gui_draw_node(control, visual_state, node, accumulator, subdepth);
+    *length = *length + 1;
+    gui_draw_node(control, visual_state, node, accumulator, subdepth, was_handled);
 
     if (!node->is_expanded)
         return;
 
     for (size_t i = 0; i < node->children_length; i++) {
-        gui_walk_tree(control, visual_state, &node->children[i], ++accumulator, subdepth);
+        gui_walk_tree(control, visual_state, &node->children[i], ++accumulator, subdepth, length, was_handled);
     }
 }
+
+void gui_select_node_at_index(t_node *node, size_t accumulator, size_t subdepth, size_t index) {
+    subdepth++;
+
+    node->is_selected = accumulator == index;
+    if (!node->is_expanded)
+        return;
+
+    for (size_t i = 0; i < node->children_length; i++) {
+        gui_select_node_at_index(&node->children[i], ++accumulator, subdepth, index);
+    }
+}
+
 
 t_treeview gui_treeview(t_control control, t_treeview treeview) {
 
@@ -371,7 +386,27 @@ t_treeview gui_treeview(t_control control, t_treeview treeview) {
 
     renderer->draw_treeview(control, visual_state, treeview);
 
-    gui_walk_tree(control, visual_state, &treeview.root_node, 0, 0);
+    size_t length = 0;
+    int32_t handled = 0;
+    gui_walk_tree(control, visual_state, &treeview.root_node, 0, 0, &length, &handled);
+
+    if (handled) return treeview;
+
+    if (focus_uid == control.uid && !input.is_primary_mouse_button_down) {
+        focus_uid = -1;
+    }
+    if (is_primary_interacting(control)) {
+        focus_uid = control.uid;
+    }
+    if (focus_uid == control.uid) {
+        size_t selected_index = gui_get_selected_index_in_collection_control(control, length,
+                                                                             0.0f);
+        if (selected_index != SIZE_MAX) {
+
+            gui_select_node_at_index(&treeview.root_node, 0, 0, selected_index);
+        }
+    }
+
 
     return treeview;
 }
