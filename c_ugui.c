@@ -303,11 +303,18 @@ t_listbox gui_listbox(t_control control, t_listbox listbox) {
 
     if (control.is_enabled && is_vector2_inside(input.mouse_position, control.rectangle) &&
         input.mouse_wheel_delta.y != 0) {
-        float sign = input.mouse_wheel_delta.y > 0.0f ? -1.0f : 1.0f;
 
-        listbox.translation += (sign != 0.0f ? (renderer->listbox_get_item_height() /
-                                                (renderer->listbox_get_item_height() * listbox.items_length)) : 0) *
-                               sign;
+        // we dont allow scrolling if the content doesnt overflow
+        float list_height =  listbox.items_length * renderer->listbox_get_item_height();
+        if (list_height > control.rectangle.height) {
+            float sign = input.mouse_wheel_delta.y > 0.0f ? -1.0f : 1.0f;
+
+            listbox.translation += (sign != 0.0f ? (renderer->listbox_get_item_height() /
+                                                    (renderer->listbox_get_item_height() * listbox.items_length)) : 0) *
+                                   sign;
+        }
+
+
     }
 
     listbox.translation = fclamp(listbox.translation, 0.0f, 1.0f);

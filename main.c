@@ -39,7 +39,7 @@ int main(void) {
             .selection_end_index = 0,
             .caret_index = 0,
     };
-    char *strings[100];
+    char *strings[50];
     for (int i = 0; i < sizeof(strings) / sizeof(strings[0]); ++i) {
         char *str = (char *) calloc(260, sizeof(char));
         sprintf(str, "%d", i);
