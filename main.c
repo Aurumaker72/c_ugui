@@ -14,6 +14,9 @@ t_visual_style get_windows_10_visual_style() {
     visual_style.texture = LoadTexture("assets/windows-10.png");
     visual_style.font = LoadFontEx("assets/micross.ttf", 14, 0, 250);
 
+    visual_style.background_color = (Color) {240, 240, 240, 255};
+    visual_style.list_item_height = visual_style.font.baseSize + 4.0f;
+
     visual_style.raised_frames[0] = (NPatchInfo) {(Rectangle) {1, 1, 11, 9}, 6, 5, 6, 5, NPATCH_NINE_PATCH};
     visual_style.raised_frames[1] = (NPatchInfo) {(Rectangle) {1, 12, 11, 9}, 6, 5, 6, 5, NPATCH_NINE_PATCH};
     visual_style.raised_frames[2] = (NPatchInfo) {(Rectangle) {1, 23, 11, 9}, 6, 5, 6, 5, NPATCH_NINE_PATCH};
@@ -34,10 +37,10 @@ t_visual_style get_windows_10_visual_style() {
     visual_style.edit_frames[2] = (NPatchInfo) {(Rectangle) {20, 11, 5, 5}, 3, 3, 3, 3, NPATCH_NINE_PATCH};
     visual_style.edit_frames[3] = (NPatchInfo) {(Rectangle) {20, 16, 5, 5}, 3, 3, 3, 3, NPATCH_NINE_PATCH};
 
-    visual_style.slider_tracks[0] = (NPatchInfo) {(Rectangle) {36, 1, 3, 3}, 2, 2, 2, 2, NPATCH_NINE_PATCH};
-    visual_style.slider_tracks[1] = (NPatchInfo) {(Rectangle) {36, 1, 3, 3}, 2, 2, 2, 2, NPATCH_NINE_PATCH};
-    visual_style.slider_tracks[2] = (NPatchInfo) {(Rectangle) {36, 1, 3, 3}, 2, 2, 2, 2, NPATCH_NINE_PATCH};
-    visual_style.slider_tracks[3] = (NPatchInfo) {(Rectangle) {36, 1, 3, 3}, 2, 2, 2, 2, NPATCH_NINE_PATCH};
+    visual_style.slider_tracks[0] = (NPatchInfo) {(Rectangle) {28, 1, 11, 9}, 6, 5, 6, 5, NPATCH_NINE_PATCH};
+    visual_style.slider_tracks[1] = (NPatchInfo) {(Rectangle) {28, 1, 11, 9}, 6, 5, 6, 5, NPATCH_NINE_PATCH};
+    visual_style.slider_tracks[2] = (NPatchInfo) {(Rectangle) {28, 1, 11, 9}, 6, 5, 6, 5, NPATCH_NINE_PATCH};
+    visual_style.slider_tracks[3] = (NPatchInfo) {(Rectangle) {28, 1, 11, 9}, 6, 5, 6, 5, NPATCH_NINE_PATCH};
 
     visual_style.slider_horizontal_thumbs[0] = (Rectangle) {40, 0, 11, 19};
     visual_style.slider_horizontal_thumbs[1] = (Rectangle) {40, 19, 11, 19};
@@ -54,6 +57,11 @@ t_visual_style get_windows_10_visual_style() {
     visual_style.progressbar_bars[2] = (NPatchInfo) {(Rectangle) {88, 11, 11, 9}, 6, 5, 6, 5, NPATCH_NINE_PATCH};
     visual_style.progressbar_bars[3] = (NPatchInfo) {(Rectangle) {88, 11, 11, 9}, 6, 5, 6, 5, NPATCH_NINE_PATCH};
 
+    visual_style.list_text_color[0] = BLACK;
+    visual_style.list_text_color[1] = RED; // unused
+    visual_style.list_text_color[2] = WHITE;
+    visual_style.list_text_color[3] = (Color) {109, 109, 109, 255};
+
     visual_style.list_content_padding = (Vector2) {4, 0};
 
     return visual_style;
@@ -66,6 +74,16 @@ t_visual_style get_windows_11_visual_style() {
     UnloadTexture(visual_style.texture);
 
     visual_style.texture = LoadTexture("assets/windows-11.png");
+    visual_style.list_item_height = visual_style.font.baseSize + 8.0f;
+
+    visual_style.background_color = (Color) {243, 243, 243, 255};
+
+    visual_style.list_text_color[0] = BLACK;
+    visual_style.list_text_color[1] = RED; // unused
+    visual_style.list_text_color[2] = BLACK;
+    visual_style.list_text_color[3] = (Color) {109, 109, 109, 255};
+
+    visual_style.list_content_padding = (Vector2) {8, 0};
 
     return visual_style;
 }
@@ -144,8 +162,7 @@ int main(void) {
 
     while (!WindowShouldClose()) {
         BeginDrawing();
-        ClearBackground((Color) {240, 240, 240, 255});
-
+        raylib_clear();
 
         int32_t pressed_chars[255] = {0};
         int32_t pressed_chars_length = 0;

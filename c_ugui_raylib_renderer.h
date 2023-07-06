@@ -11,6 +11,8 @@
 typedef struct t_visual_style {
     Texture2D texture;
     Font font;
+    Color background_color;
+    float list_item_height;
     NPatchInfo raised_frames[4];
     NPatchInfo edit_frames[4];
     NPatchInfo list_frames[4];
@@ -20,9 +22,12 @@ typedef struct t_visual_style {
     Rectangle slider_vertical_thumbs[4];
     NPatchInfo progressbar_bars[4];
     Vector2 list_content_padding;
+    Color list_text_color[4];
 } t_visual_style;
 
 void raylib_unload_visual_style(void);
+
+void raylib_clear();
 
 void raylib_set_visual_style(t_visual_style);
 
