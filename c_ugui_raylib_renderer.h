@@ -21,6 +21,7 @@ void raylib_draw_slider(t_control, e_visual_state, t_slider);
 void raylib_draw_listbox(t_control, e_visual_state, t_listbox);
 void raylib_draw_progressbar(t_control, e_visual_state, t_progressbar);
 void raylib_draw_treeview(t_control, e_visual_state, t_treeview);
+void raylib_draw_treeview_node(t_control, e_visual_state, t_node, size_t, size_t);
 
 t_vector2 raylib_measure_text(const char *);
 

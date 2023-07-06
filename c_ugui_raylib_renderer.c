@@ -351,28 +351,26 @@ void raylib_draw_progressbar(t_control control, e_visual_state visual_state, t_p
     }, -1), (Vector2) {0}, 0.0f, WHITE);
 }
 
-void draw_node(t_control control, t_node node, size_t index, size_t subdepth) {
-    float x = control.rectangle.x + (16 * subdepth);
-    float y = control.rectangle.y + (16 * index);
-    DrawTextEx(font, node.text, (Vector2) {x, y}, font.baseSize, 0.0f,
-               control.is_enabled ? BLACK : (Color) {109, 109, 109, 255});
-}
-
-void walk_tree(t_control control, const t_node *node, size_t accumulator, size_t subdepth) {
-    subdepth++;
-    draw_node(control, *node, accumulator, subdepth);
-    if (!node->is_expanded)
-        return;
-    for (size_t i = 0; i < node->children_length; i++) {
-        walk_tree(control, &node->children[i], ++accumulator, subdepth);
-    }
-}
-
 void raylib_draw_treeview(t_control control, e_visual_state visual_state, t_treeview treeview) {
-
     raylib_draw_listbox(control, visual_state, (t_listbox) {0});
+}
 
-    walk_tree(control, &treeview.root_node, 0, 0);
+void
+raylib_draw_treeview_node(t_control control, e_visual_state visual_state, t_node node, size_t index, size_t subdepth) {
+    float x = control.rectangle.x + (raylib_listbox_get_item_height() * subdepth);
+    float y = control.rectangle.y + (raylib_listbox_get_item_height() * index);
 
+    Vector2 text_bounds = MeasureTextEx(font, node.text, font.baseSize, 0.0f);
 
+    Rectangle node_rectangle = (Rectangle) {
+            .x = x,
+            .y = y,
+            .width = text_bounds.x,
+            .height = raylib_listbox_get_item_height(),
+    };
+
+    DrawTextEx(font, node.text, (Vector2) {
+            node_rectangle.x + node_rectangle.width / 2 - text_bounds.x / 2,
+            node_rectangle.y + node_rectangle.height / 2 - text_bounds.y / 2,
+    }, font.baseSize, 0.0f, control.is_enabled ? BLACK : (Color) {109, 109, 109, 255});
 }

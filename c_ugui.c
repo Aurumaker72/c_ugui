@@ -270,6 +270,21 @@ float gui_slider(t_control control, t_slider slider) {
     return slider.value;
 }
 
+size_t gui_get_selected_index_in_collection_control(t_control control, size_t items_length, float translation) {
+    float list_height = renderer->listbox_get_item_height() * items_length;
+    float rel_mouse_y = input.mouse_position.y - control.rectangle.y;
+    // if the mouse is outside of the control's bounds, we don't allow the selection to change
+    if (rel_mouse_y > 0.0f && rel_mouse_y < control.rectangle.height) {
+        // compute the selection index based off of the bounds, mouse position, and translation
+        size_t i = floor((rel_mouse_y + (translation * (list_height - control.rectangle.height))) /
+                         renderer->listbox_get_item_height());
+
+        return iclamp(i, 0, items_length - 1);
+    }
+    return SIZE_MAX;
+
+}
+
 t_listbox gui_listbox(t_control control, t_listbox listbox) {
     if (focus_uid == control.uid && !input.is_primary_mouse_button_down) {
         focus_uid = -1;
@@ -278,19 +293,12 @@ t_listbox gui_listbox(t_control control, t_listbox listbox) {
         focus_uid = control.uid;
     }
     if (focus_uid == control.uid) {
-        float list_height = renderer->listbox_get_item_height() * listbox.items_length;
-        float rel_mouse_y = input.mouse_position.y - control.rectangle.y;
-        // if the mouse is outside of the control's bounds, we don't allow the selection to change
-        if (rel_mouse_y > 0.0f && rel_mouse_y < control.rectangle.height) {
-            // compute the selection index based off of the bounds, mouse position, and translation
-            size_t i = floor((rel_mouse_y + (listbox.translation * (list_height - control.rectangle.height))) /
-                             renderer->listbox_get_item_height());
+        size_t selected_index = gui_get_selected_index_in_collection_control(control, listbox.items_length,
+                                                                             listbox.translation);
 
-            listbox.selected_index = iclamp(
-                    i, 0, listbox.items_length - 1);
+        if (selected_index != SIZE_MAX) {
+            listbox.selected_index = selected_index;
         }
-
-
     }
 
     if (control.is_enabled && is_vector2_inside(input.mouse_position, control.rectangle) &&
@@ -314,18 +322,20 @@ void gui_progresbar(t_control control, t_progressbar progress_bar) {
                                progress_bar);
 }
 
-void gui_draw_node(t_control control, t_node *node, size_t index, size_t subdepth) {
+void gui_draw_node(t_control control, e_visual_state visual_state, t_node *node, size_t index, size_t subdepth) {
+    renderer->draw_treeview_node(control, visual_state, *node, index, subdepth);
+
     if (node->children_length == 0) return;
 
-    float x = control.rectangle.x + (16 * (subdepth - 1));
-    float y = control.rectangle.y + (16 * index);
+    float x = control.rectangle.x + (renderer->listbox_get_item_height() * (subdepth - 1));
+    float y = control.rectangle.y + (renderer->listbox_get_item_height() * index);
     if (gui_button((t_control) {
             .uid  = control.uid * 1024,
             .rectangle = (t_rectangle) {
                     .x = x,
                     .y = y,
-                    .width = 16,
-                    .height = 16
+                    .width = renderer->listbox_get_item_height(),
+                    .height = renderer->listbox_get_item_height()
             },
             .is_enabled = control.is_enabled
     }, (t_button) {
@@ -333,25 +343,28 @@ void gui_draw_node(t_control control, t_node *node, size_t index, size_t subdept
     })) {
         node->is_expanded ^= 1;
     }
+
 }
 
-void gui_walk_tree(t_control control, t_node *node, size_t accumulator, size_t subdepth) {
-
-
+void gui_walk_tree(t_control control, e_visual_state visual_state, t_node *node, size_t accumulator, size_t subdepth) {
     subdepth++;
-    gui_draw_node(control, node, accumulator, subdepth);
+    gui_draw_node(control, visual_state, node, accumulator, subdepth);
 
     if (!node->is_expanded)
         return;
+
     for (size_t i = 0; i < node->children_length; i++) {
-        gui_walk_tree(control, &node->children[i], ++accumulator, subdepth);
+        gui_walk_tree(control, visual_state, &node->children[i], ++accumulator, subdepth);
     }
 }
 
 t_treeview gui_treeview(t_control control, t_treeview treeview) {
-    renderer->draw_treeview(control, e_visual_state_normal, treeview);
 
-    gui_walk_tree(control, &treeview.root_node, 0, 0);
+    e_visual_state visual_state = control.is_enabled ? e_visual_state_normal : e_visual_state_disabled;
+
+    renderer->draw_treeview(control, visual_state, treeview);
+
+    gui_walk_tree(control, visual_state, &treeview.root_node, 0, 0);
 
     return treeview;
 }

@@ -25,6 +25,7 @@ int main(void) {
             .listbox_get_item_height = raylib_listbox_get_item_height,
             .draw_progressbar = raylib_draw_progressbar,
             .draw_treeview = raylib_draw_treeview,
+            .draw_treeview_node = raylib_draw_treeview_node
     };
 
     raylib_load_theme("assets/windows-10.png", "assets/micross.ttf");

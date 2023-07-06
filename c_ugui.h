@@ -84,9 +84,9 @@ typedef struct t_progressbar {
 } t_progressbar;
 
 typedef struct t_node {
-    struct t_node* children;
+    struct t_node *children;
     size_t children_length;
-    const char* text;
+    const char *text;
     int32_t is_expanded;
 } t_node;
 
@@ -105,7 +105,10 @@ typedef void (*renderer_draw_slider)(t_control, e_visual_state, t_slider);
 typedef void (*renderer_draw_listbox)(t_control, e_visual_state, t_listbox);
 
 typedef void (*renderer_draw_progressbar)(t_control, e_visual_state, t_progressbar);
+
 typedef void (*renderer_draw_treeview)(t_control, e_visual_state, t_treeview);
+
+typedef void (*renderer_draw_treeview_node)(t_control, e_visual_state, t_node, size_t, size_t);
 
 typedef float (*renderer_listbox_get_item_height)();
 
@@ -121,6 +124,7 @@ typedef struct t_renderer {
     renderer_listbox_get_item_height listbox_get_item_height;
     renderer_draw_progressbar draw_progressbar;
     renderer_draw_treeview draw_treeview;
+    renderer_draw_treeview_node draw_treeview_node;
 } t_renderer;
 
 int32_t gui_get_focus_uid();
