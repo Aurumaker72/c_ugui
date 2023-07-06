@@ -63,6 +63,7 @@ t_visual_style get_windows_10_visual_style() {
     visual_style.list_text_color[3] = (Color) {109, 109, 109, 255};
 
     visual_style.list_content_padding = (Vector2) {4, 0};
+    visual_style.slider_thumb_size = (Vector2) {11, 19};
 
     return visual_style;
 }
@@ -84,6 +85,9 @@ t_visual_style get_windows_11_visual_style() {
     visual_style.list_text_color[3] = (Color) {109, 109, 109, 255};
 
     visual_style.list_content_padding = (Vector2) {8, 0};
+    visual_style.slider_thumb_size = (Vector2) {22, 38};
+
+    SetTextureFilter(visual_style.texture, TEXTURE_FILTER_POINT);
 
     return visual_style;
 }

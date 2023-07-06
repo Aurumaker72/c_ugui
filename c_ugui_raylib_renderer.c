@@ -154,8 +154,6 @@ void raylib_draw_textbox(t_control control, e_visual_state visual_state, t_textb
 
 void raylib_draw_slider(t_control control, e_visual_state visual_state, t_slider slider) {
     const int32_t is_horizontal = control.rectangle.width > control.rectangle.height;
-    const float thumb_width = 11.0f;
-    const float thumb_height = 19.0f;
     const float track_thickness = 4.0f;
 
     Rectangle track_rectangle;
@@ -184,17 +182,17 @@ void raylib_draw_slider(t_control control, e_visual_state visual_state, t_slider
 
     if (is_horizontal) {
         thumb_dest_rectangle = (Rectangle) {
-                control.rectangle.x + (control.rectangle.width * slider.value) - thumb_width / 2,
-                control.rectangle.y + control.rectangle.height / 2 - thumb_height / 2,
-                thumb_width,
-                thumb_height
+                control.rectangle.x + (control.rectangle.width * slider.value) - visual_style.slider_thumb_size.x / 2,
+                control.rectangle.y + control.rectangle.height / 2 - visual_style.slider_thumb_size.y / 2,
+                visual_style.slider_thumb_size.x,
+                visual_style.slider_thumb_size.y
         };
     } else {
         thumb_dest_rectangle = (Rectangle) {
-                control.rectangle.x + control.rectangle.width / 2 - thumb_height / 2,
-                control.rectangle.y + (control.rectangle.height * slider.value) - thumb_width / 2,
-                thumb_height,
-                thumb_width
+                control.rectangle.x + control.rectangle.width / 2 - visual_style.slider_thumb_size.y / 2,
+                control.rectangle.y + (control.rectangle.height * slider.value) - visual_style.slider_thumb_size.x / 2,
+                visual_style.slider_thumb_size.y,
+                visual_style.slider_thumb_size.x
         };
     }
 

@@ -13,6 +13,7 @@ typedef struct t_visual_style {
     Font font;
     Color background_color;
     float list_item_height;
+    Vector2 slider_thumb_size;
     NPatchInfo raised_frames[4];
     NPatchInfo edit_frames[4];
     NPatchInfo list_frames[4];
