@@ -19,15 +19,15 @@ t_visual_style get_windows_10_visual_style() {
     visual_style.raised_frames[2] = (NPatchInfo) {(Rectangle) {1, 23, 11, 9}, 6, 5, 6, 5, NPATCH_NINE_PATCH};
     visual_style.raised_frames[3] = (NPatchInfo) {(Rectangle) {1, 34, 11, 9}, 6, 5, 6, 5, NPATCH_NINE_PATCH};
 
-    visual_style.list_frames[0] = (NPatchInfo) {(Rectangle) {36, 6, 3, 3}, 2, 2, 2, 2, NPATCH_NINE_PATCH};
-    visual_style.list_frames[1] = (NPatchInfo) {(Rectangle) {36, 6, 3, 3}, 2, 2, 2, 2, NPATCH_NINE_PATCH};
-    visual_style.list_frames[2] = (NPatchInfo) {(Rectangle) {36, 6, 3, 3}, 2, 2, 2, 2, NPATCH_NINE_PATCH};
-    visual_style.list_frames[3] = (NPatchInfo) {(Rectangle) {36, 6, 3, 3}, 2, 2, 2, 2, NPATCH_NINE_PATCH};
+    visual_style.list_frames[0] = (NPatchInfo) {(Rectangle) {28, 21, 11, 9}, 6, 5, 6, 5, NPATCH_NINE_PATCH};
+    visual_style.list_frames[1] = (NPatchInfo) {(Rectangle) {28, 21, 11, 9}, 6, 5, 6, 5, NPATCH_NINE_PATCH};
+    visual_style.list_frames[2] = (NPatchInfo) {(Rectangle) {28, 21, 11, 9}, 6, 5, 6, 5, NPATCH_NINE_PATCH};
+    visual_style.list_frames[3] = (NPatchInfo) {(Rectangle) {28, 21, 11, 9}, 6, 5, 6, 5, NPATCH_NINE_PATCH};
 
-    visual_style.list_selected_frames[0] = (NPatchInfo) {(Rectangle) {34, 11, 5, 5}, 3, 3, 3, 3, NPATCH_NINE_PATCH};
-    visual_style.list_selected_frames[1] = (NPatchInfo) {(Rectangle) {34, 11, 5, 5}, 3, 3, 3, 3, NPATCH_NINE_PATCH};
-    visual_style.list_selected_frames[2] = (NPatchInfo) {(Rectangle) {34, 11, 5, 5}, 3, 3, 3, 3, NPATCH_NINE_PATCH};
-    visual_style.list_selected_frames[3] = (NPatchInfo) {(Rectangle) {34, 11, 5, 5}, 3, 3, 3, 3, NPATCH_NINE_PATCH};
+    visual_style.list_selected_frames[0] = (NPatchInfo) {(Rectangle) {28, 11, 11, 9}, 6, 5, 6, 5, NPATCH_NINE_PATCH};
+    visual_style.list_selected_frames[1] = (NPatchInfo) {(Rectangle) {28, 11, 11, 9}, 6, 5, 6, 5, NPATCH_NINE_PATCH};
+    visual_style.list_selected_frames[2] = (NPatchInfo) {(Rectangle) {28, 11, 11, 9}, 6, 5, 6, 5, NPATCH_NINE_PATCH};
+    visual_style.list_selected_frames[3] = (NPatchInfo) {(Rectangle) {28, 11, 11, 9}, 6, 5, 6, 5, NPATCH_NINE_PATCH};
 
     visual_style.edit_frames[0] = (NPatchInfo) {(Rectangle) {20, 1, 5, 5}, 3, 3, 3, 3, NPATCH_NINE_PATCH};
     visual_style.edit_frames[1] = (NPatchInfo) {(Rectangle) {20, 6, 5, 5}, 3, 3, 3, 3, NPATCH_NINE_PATCH};
