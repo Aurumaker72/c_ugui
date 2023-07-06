@@ -87,9 +87,18 @@ t_visual_style get_windows_11_visual_style() {
     visual_style.list_text_color[3] = (Color) {109, 109, 109, 255};
 
     visual_style.list_content_padding = (Vector2) {8, 0};
-    visual_style.slider_thumb_size = (Vector2) {22, 38};
 
-    SetTextureFilter(visual_style.texture, TEXTURE_FILTER_POINT);
+    visual_style.slider_horizontal_thumbs[0] = (Rectangle) {2, 320, 52, 52};
+    visual_style.slider_horizontal_thumbs[1] = (Rectangle) {2, 372, 52, 52};
+    visual_style.slider_horizontal_thumbs[2] = (Rectangle) {2, 424, 52, 52};
+    visual_style.slider_horizontal_thumbs[3] = (Rectangle) {2, 476, 52, 52};
+
+    visual_style.slider_vertical_thumbs[0] = visual_style.slider_horizontal_thumbs[0];
+    visual_style.slider_vertical_thumbs[1] = visual_style.slider_horizontal_thumbs[1];
+    visual_style.slider_vertical_thumbs[2] = visual_style.slider_horizontal_thumbs[2];
+    visual_style.slider_vertical_thumbs[3] = visual_style.slider_horizontal_thumbs[3];
+
+    visual_style.slider_thumb_size = (Vector2) {19, 19};
 
     return visual_style;
 }
