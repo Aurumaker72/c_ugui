@@ -1,8 +1,5 @@
-#include <string.h>
 #include <malloc.h>
 #include <stdio.h>
-#include <math.h>
-#include "raylib.h"
 #include "c_ugui.h"
 #include "c_ugui_raylib_renderer.h"
 
@@ -10,6 +7,67 @@
 #define SCREEN_HEIGHT (450)
 
 #define WINDOW_TITLE "Window title"
+
+t_visual_style get_windows_10_visual_style() {
+    t_visual_style visual_style = (t_visual_style) {0};
+
+    visual_style.texture = LoadTexture("assets/windows-10.png");
+    visual_style.font = LoadFontEx("assets/micross.ttf", 14, 0, 250);
+
+    visual_style.raised_frames[0] = (NPatchInfo) {(Rectangle) {1, 1, 11, 9}, 6, 5, 6, 5, NPATCH_NINE_PATCH};
+    visual_style.raised_frames[1] = (NPatchInfo) {(Rectangle) {1, 12, 11, 9}, 6, 5, 6, 5, NPATCH_NINE_PATCH};
+    visual_style.raised_frames[2] = (NPatchInfo) {(Rectangle) {1, 23, 11, 9}, 6, 5, 6, 5, NPATCH_NINE_PATCH};
+    visual_style.raised_frames[3] = (NPatchInfo) {(Rectangle) {1, 34, 11, 9}, 6, 5, 6, 5, NPATCH_NINE_PATCH};
+
+    visual_style.list_frames[0] = (NPatchInfo) {(Rectangle) {36, 6, 3, 3}, 2, 2, 2, 2, NPATCH_NINE_PATCH};
+    visual_style.list_frames[1] = (NPatchInfo) {(Rectangle) {36, 6, 3, 3}, 2, 2, 2, 2, NPATCH_NINE_PATCH};
+    visual_style.list_frames[2] = (NPatchInfo) {(Rectangle) {36, 6, 3, 3}, 2, 2, 2, 2, NPATCH_NINE_PATCH};
+    visual_style.list_frames[3] = (NPatchInfo) {(Rectangle) {36, 6, 3, 3}, 2, 2, 2, 2, NPATCH_NINE_PATCH};
+
+    visual_style.list_selected_frames[0] = (NPatchInfo) {(Rectangle) {34, 11, 5, 5}, 3, 3, 3, 3, NPATCH_NINE_PATCH};
+    visual_style.list_selected_frames[1] = (NPatchInfo) {(Rectangle) {34, 11, 5, 5}, 3, 3, 3, 3, NPATCH_NINE_PATCH};
+    visual_style.list_selected_frames[2] = (NPatchInfo) {(Rectangle) {34, 11, 5, 5}, 3, 3, 3, 3, NPATCH_NINE_PATCH};
+    visual_style.list_selected_frames[3] = (NPatchInfo) {(Rectangle) {34, 11, 5, 5}, 3, 3, 3, 3, NPATCH_NINE_PATCH};
+
+    visual_style.edit_frames[0] = (NPatchInfo) {(Rectangle) {20, 1, 5, 5}, 3, 3, 3, 3, NPATCH_NINE_PATCH};
+    visual_style.edit_frames[1] = (NPatchInfo) {(Rectangle) {20, 6, 5, 5}, 3, 3, 3, 3, NPATCH_NINE_PATCH};
+    visual_style.edit_frames[2] = (NPatchInfo) {(Rectangle) {20, 11, 5, 5}, 3, 3, 3, 3, NPATCH_NINE_PATCH};
+    visual_style.edit_frames[3] = (NPatchInfo) {(Rectangle) {20, 16, 5, 5}, 3, 3, 3, 3, NPATCH_NINE_PATCH};
+
+    visual_style.slider_tracks[0] = (NPatchInfo) {(Rectangle) {36, 1, 3, 3}, 2, 2, 2, 2, NPATCH_NINE_PATCH};
+    visual_style.slider_tracks[1] = (NPatchInfo) {(Rectangle) {36, 1, 3, 3}, 2, 2, 2, 2, NPATCH_NINE_PATCH};
+    visual_style.slider_tracks[2] = (NPatchInfo) {(Rectangle) {36, 1, 3, 3}, 2, 2, 2, 2, NPATCH_NINE_PATCH};
+    visual_style.slider_tracks[3] = (NPatchInfo) {(Rectangle) {36, 1, 3, 3}, 2, 2, 2, 2, NPATCH_NINE_PATCH};
+
+    visual_style.slider_horizontal_thumbs[0] = (Rectangle) {40, 0, 11, 19};
+    visual_style.slider_horizontal_thumbs[1] = (Rectangle) {40, 19, 11, 19};
+    visual_style.slider_horizontal_thumbs[2] = (Rectangle) {40, 38, 11, 19};
+    visual_style.slider_horizontal_thumbs[3] = (Rectangle) {40, 76, 11, 19};
+
+    visual_style.slider_vertical_thumbs[0] = (Rectangle) {53, 0, 19, 11};
+    visual_style.slider_vertical_thumbs[1] = (Rectangle) {53, 11, 19, 11};
+    visual_style.slider_vertical_thumbs[2] = (Rectangle) {53, 22, 19, 11};
+    visual_style.slider_vertical_thumbs[3] = (Rectangle) {53, 44, 19, 11};
+
+    visual_style.progressbar_bars[0] = (NPatchInfo) {(Rectangle) {88, 11, 11, 9}, 6, 5, 6, 5, NPATCH_NINE_PATCH};
+    visual_style.progressbar_bars[1] = (NPatchInfo) {(Rectangle) {88, 11, 11, 9}, 6, 5, 6, 5, NPATCH_NINE_PATCH};
+    visual_style.progressbar_bars[2] = (NPatchInfo) {(Rectangle) {88, 11, 11, 9}, 6, 5, 6, 5, NPATCH_NINE_PATCH};
+    visual_style.progressbar_bars[3] = (NPatchInfo) {(Rectangle) {88, 11, 11, 9}, 6, 5, 6, 5, NPATCH_NINE_PATCH};
+
+
+    return visual_style;
+}
+
+t_visual_style get_windows_11_visual_style() {
+
+    t_visual_style visual_style = get_windows_10_visual_style();
+
+    UnloadTexture(visual_style.texture);
+
+    visual_style.texture = LoadTexture("assets/windows-11.png");
+
+    return visual_style;
+}
 
 int main(void) {
     SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_MSAA_4X_HINT);
@@ -28,7 +86,7 @@ int main(void) {
             .draw_treeview_node = raylib_draw_treeview_node
     };
 
-    raylib_load_theme("assets/windows-10.png", "assets/micross.ttf");
+    raylib_set_visual_style(get_windows_10_visual_style());
 
     int32_t is_checked = 1;
     float some_range_value = 0.5f;
@@ -85,7 +143,7 @@ int main(void) {
 
     while (!WindowShouldClose()) {
         BeginDrawing();
-        ClearBackground((Color) { 240, 240, 240, 255});
+        ClearBackground((Color) {240, 240, 240, 255});
 
 
         int32_t pressed_chars[255] = {0};
@@ -126,8 +184,8 @@ int main(void) {
         }, (t_button) {
                 .text = "Windows 10"
         })) {
-            raylib_unload();
-            raylib_load_theme("assets/windows-10.png", "assets/micross.ttf");
+            raylib_unload_visual_style();
+            raylib_set_visual_style(get_windows_10_visual_style());
         }
 
         if (gui_button((t_control) {
@@ -142,8 +200,8 @@ int main(void) {
         }, (t_button) {
                 .text = "Windows 11"
         })) {
-            raylib_unload();
-            raylib_load_theme("assets/windows-11.png", "assets/micross.ttf");
+            raylib_unload_visual_style();
+            raylib_set_visual_style(get_windows_11_visual_style());
         }
 
         is_checked = gui_togglebutton((t_control) {
@@ -233,7 +291,7 @@ int main(void) {
 
         EndDrawing();
     }
-    raylib_unload();
+
     CloseWindow();
 
     return 0;

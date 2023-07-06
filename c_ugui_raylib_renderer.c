@@ -6,12 +6,9 @@
 #include <string.h>
 #include <malloc.h>
 #include <stdio.h>
-#include <math.h>
-#include "raylib.h"
 #include "c_ugui.h"
 
-Texture2D atlas;
-Font font;
+t_visual_style visual_style;
 
 void slice(const char *str, char *result, size_t start, size_t end) {
     strncpy(result, str + start, end - start);
@@ -37,7 +34,7 @@ Rectangle inflate_rectangle(Rectangle rectangle, float value) {
 }
 
 t_vector2 raylib_measure_text(const char *text) {
-    Vector2 size = MeasureTextEx(font, text, 14.0f, 0.0f);
+    Vector2 size = MeasureTextEx(visual_style.font, text, visual_style.font.baseSize, 0.0f);
     return (t_vector2) {size.x, size.y};
 }
 
@@ -55,31 +52,21 @@ float caret_x_from_index(const char *text, int32_t caret_index) {
 
 void raylib_draw_button(t_control control, e_visual_state visual_state, t_button button) {
 
-    NPatchInfo patch_info;
+    NPatchInfo patch_info = visual_style.raised_frames[visual_state];
 
-    if (visual_state == e_visual_state_normal) {
-        patch_info = (NPatchInfo) {(Rectangle) {1, 1, 11, 9}, 6, 5, 6, 5, NPATCH_NINE_PATCH};
-    } else if (visual_state == e_visual_state_hovered) {
-        patch_info = (NPatchInfo) {(Rectangle) {1, 12, 11, 9}, 6, 5, 6, 5, NPATCH_NINE_PATCH};
-    } else if (visual_state == e_visual_state_active) {
-        patch_info = (NPatchInfo) {(Rectangle) {1, 23, 11, 9}, 6, 5, 6, 5, NPATCH_NINE_PATCH};
-    } else {
-        patch_info = (NPatchInfo) {(Rectangle) {1, 34, 11, 9}, 6, 5, 6, 5, NPATCH_NINE_PATCH};
-    }
-
-    DrawTextureNPatch(atlas, patch_info, (Rectangle) {
+    DrawTextureNPatch(visual_style.texture, patch_info, (Rectangle) {
             .x = control.rectangle.x,
             .y = control.rectangle.y,
             .width = control.rectangle.width,
             .height = control.rectangle.height,
     }, (Vector2) {0}, 0.0f, WHITE);
 
-    Vector2 text_bounds = MeasureTextEx(font, button.text, font.baseSize, 0.0f);
+    Vector2 text_bounds = MeasureTextEx(visual_style.font, button.text, visual_style.font.baseSize, 0.0f);
 
-    DrawTextEx(font, button.text, (Vector2) {
+    DrawTextEx(visual_style.font, button.text, (Vector2) {
             control.rectangle.x + control.rectangle.width / 2 - text_bounds.x / 2,
             control.rectangle.y + control.rectangle.height / 2 - text_bounds.y / 2,
-    }, font.baseSize, 0.0f, control.is_enabled ? BLACK : (Color) {
+    }, visual_style.font.baseSize, 0.0f, control.is_enabled ? BLACK : (Color) {
             160,
             160,
             160,
@@ -95,31 +82,21 @@ void raylib_draw_togglebutton(t_control control, e_visual_state visual_state, t_
 
 void raylib_draw_textbox(t_control control, e_visual_state visual_state, t_textbox textbox) {
 
-    NPatchInfo patch_info;
+    NPatchInfo patch_info = visual_style.edit_frames[visual_state];
 
-    if (visual_state == e_visual_state_normal) {
-        patch_info = (NPatchInfo) {(Rectangle) {20, 1, 5, 5}, 3, 3, 3, 3, NPATCH_NINE_PATCH};
-    } else if (visual_state == e_visual_state_hovered) {
-        patch_info = (NPatchInfo) {(Rectangle) {20, 6, 5, 5}, 3, 3, 3, 3, NPATCH_NINE_PATCH};
-    } else if (visual_state == e_visual_state_active) {
-        patch_info = (NPatchInfo) {(Rectangle) {20, 11, 5, 5}, 3, 3, 3, 3, NPATCH_NINE_PATCH};
-    } else {
-        patch_info = (NPatchInfo) {(Rectangle) {20, 16, 5, 5}, 3, 3, 3, 3, NPATCH_NINE_PATCH};
-    }
-
-    DrawTextureNPatch(atlas, patch_info, (Rectangle) {
+    DrawTextureNPatch(visual_style.texture, patch_info, (Rectangle) {
             .x = control.rectangle.x,
             .y = control.rectangle.y,
             .width = control.rectangle.width,
             .height = control.rectangle.height,
     }, (Vector2) {0}, 0.0f, WHITE);
 
-    Vector2 text_bounds = MeasureTextEx(font, textbox.text, 14.0f, 0.0f);
+    Vector2 text_bounds = MeasureTextEx(visual_style.font, textbox.text, 14.0f, 0.0f);
 
-    DrawTextEx(font, textbox.text, (Vector2) {
+    DrawTextEx(visual_style.font, textbox.text, (Vector2) {
             control.rectangle.x,
             control.rectangle.y + control.rectangle.height / 2 - text_bounds.y / 2,
-    }, font.baseSize, 0.0f, control.is_enabled ? BLACK : (Color) {
+    }, visual_style.font.baseSize, 0.0f, control.is_enabled ? BLACK : (Color) {
             160,
             160,
             160,
@@ -142,7 +119,7 @@ void raylib_draw_textbox(t_control control, e_visual_state visual_state, t_textb
         selection_end_x = start;
     }
 
-    DrawTexturePro(atlas, (Rectangle) {
+    DrawTexturePro(visual_style.texture, (Rectangle) {
             20,
             23,
             1,
@@ -154,7 +131,7 @@ void raylib_draw_textbox(t_control control, e_visual_state visual_state, t_textb
             control.rectangle.height
     }, (Vector2) {0}, 0.0f, WHITE);
 
-    DrawTexturePro(atlas, (Rectangle) {
+    DrawTexturePro(visual_style.texture, (Rectangle) {
             21,
             23,
             1,
@@ -168,10 +145,10 @@ void raylib_draw_textbox(t_control control, e_visual_state visual_state, t_textb
 
     BeginScissorMode(control.rectangle.x + selection_start_x, control.rectangle.y, selection_end_x - selection_start_x,
                      control.rectangle.height);
-    DrawTextEx(font, textbox.text, (Vector2) {
+    DrawTextEx(visual_style.font, textbox.text, (Vector2) {
             control.rectangle.x,
             control.rectangle.y + control.rectangle.height / 2 - text_bounds.y / 2,
-    }, font.baseSize, 0.0f, WHITE);
+    }, visual_style.font.baseSize, 0.0f, WHITE);
     EndScissorMode();
 }
 
@@ -180,8 +157,6 @@ void raylib_draw_slider(t_control control, e_visual_state visual_state, t_slider
     const float thumb_width = 11.0f; // dimensions are 11x9, but for some reason raylib misses the last row of pixels
     const float thumb_height = 19.0f;
     const int32_t is_horizontal = control.rectangle.width > control.rectangle.height;
-
-    NPatchInfo patch_info = (NPatchInfo) {(Rectangle) {36, 1, 3, 3}, 2, 2, 2, 2, NPATCH_NINE_PATCH};
 
     Rectangle track_rectangle;
 
@@ -200,32 +175,8 @@ void raylib_draw_slider(t_control control, e_visual_state visual_state, t_slider
                 .height = control.rectangle.height,
         };
     }
-    DrawTextureNPatch(atlas, patch_info, track_rectangle, (Vector2) {0}, 0.0f, WHITE);
-
-
-    Rectangle thumb_src_rectangle;
-
-    if (is_horizontal) {
-        if (visual_state == e_visual_state_normal) {
-            thumb_src_rectangle = (Rectangle) {40, 0, 11, 19};
-        } else if (visual_state == e_visual_state_hovered) {
-            thumb_src_rectangle = (Rectangle) {40, 19, 11, 19};
-        } else if (visual_state == e_visual_state_active) {
-            thumb_src_rectangle = (Rectangle) {40, 38, 11, 19};
-        } else {
-            thumb_src_rectangle = (Rectangle) {40, 76, 11, 19};
-        }
-    } else {
-        if (visual_state == e_visual_state_normal) {
-            thumb_src_rectangle = (Rectangle) {53, 0, 19, 11};
-        } else if (visual_state == e_visual_state_hovered) {
-            thumb_src_rectangle = (Rectangle) {53, 11, 19, 11};
-        } else if (visual_state == e_visual_state_active) {
-            thumb_src_rectangle = (Rectangle) {53, 22, 19, 11};
-        } else {
-            thumb_src_rectangle = (Rectangle) {53, 44, 19, 11};
-        }
-    }
+    DrawTextureNPatch(visual_style.texture, visual_style.slider_tracks[visual_state], track_rectangle, (Vector2) {0},
+                      0.0f, WHITE);
 
 
     Rectangle thumb_dest_rectangle;
@@ -246,18 +197,18 @@ void raylib_draw_slider(t_control control, e_visual_state visual_state, t_slider
                 thumb_width
         };
     }
-    DrawTexturePro(atlas, thumb_src_rectangle, thumb_dest_rectangle, (Vector2) {0}, 0.0f, WHITE);
+    DrawTexturePro(visual_style.texture, is_horizontal ? visual_style.slider_horizontal_thumbs[visual_state]
+                                                       : visual_style.slider_vertical_thumbs[visual_state],
+                   thumb_dest_rectangle, (Vector2) {0}, 0.0f, WHITE);
 }
 
 float raylib_listbox_get_item_height() {
-    return font.baseSize + 4.0f;
+    return visual_style.font.baseSize + 4.0f;
 }
 
 void raylib_draw_listbox(t_control control, e_visual_state visual_state, t_listbox listbox) {
-    const float padding = 2.0f;
-    NPatchInfo patch_info = (NPatchInfo) {(Rectangle) {36, 6, 3, 3}, 2, 2, 2, 2, NPATCH_NINE_PATCH};
 
-    DrawTextureNPatch(atlas, patch_info, (Rectangle) {
+    DrawTextureNPatch(visual_style.texture, visual_style.list_frames[visual_state], (Rectangle) {
             .x = control.rectangle.x,
             .y = control.rectangle.y,
             .width = control.rectangle.width,
@@ -293,9 +244,7 @@ void raylib_draw_listbox(t_control control, e_visual_state visual_state, t_listb
                    ((raylib_listbox_get_item_height() * listbox.items_length) - control.rectangle.height));
 
         if (listbox.selected_index == i) {
-            NPatchInfo patch_info = (NPatchInfo) {(Rectangle) {34, 11, 5, 5}, 2, 2, 2, 2, NPATCH_NINE_PATCH};
-
-            DrawTextureNPatch(atlas, patch_info, inflate_rectangle((Rectangle) {
+            DrawTextureNPatch(visual_style.texture, visual_style.list_selected_frames[visual_state], inflate_rectangle((Rectangle) {
                     .x = control.rectangle.x,
                     .y = control.rectangle.y + y,
                     .width = control.rectangle.width,
@@ -310,40 +259,26 @@ void raylib_draw_listbox(t_control control, e_visual_state visual_state, t_listb
                 raylib_listbox_get_item_height()
         };
 
-        Vector2 text_bounds = MeasureTextEx(font, listbox.items[i], font.baseSize, 0.0f);
+        Vector2 text_bounds = MeasureTextEx(visual_style.font, listbox.items[i], visual_style.font.baseSize, 0.0f);
 
-        DrawTextEx(font, listbox.items[i], (Vector2) {
+        DrawTextEx(visual_style.font, listbox.items[i], (Vector2) {
                 item_rectangle.x + 4.0f,
                 item_rectangle.y + item_rectangle.height / 2 - text_bounds.y / 2,
-        }, font.baseSize, 0.0f, text_color);
+        }, visual_style.font.baseSize, 0.0f, text_color);
 
     }
     EndScissorMode();
 }
 
-void raylib_load_theme(const char *atlas_path, const char *font_path) {
-    atlas = LoadTexture(atlas_path);
-    font = LoadFontEx(font_path, 14, NULL, 250);
-}
-
-void raylib_unload() {
-    UnloadTexture(atlas);
-    UnloadFont(font);
-}
-
 void raylib_draw_progressbar(t_control control, e_visual_state visual_state, t_progressbar progress_bar) {
-    NPatchInfo patch_info = (NPatchInfo) {(Rectangle) {88, 1, 11, 9}, 6, 5, 6, 5, NPATCH_NINE_PATCH};
-
-    DrawTextureNPatch(atlas, patch_info, (Rectangle) {
+    DrawTextureNPatch(visual_style.texture, visual_style.raised_frames[visual_state], (Rectangle) {
             .x = control.rectangle.x,
             .y = control.rectangle.y,
             .width = control.rectangle.width,
             .height = control.rectangle.height,
     }, (Vector2) {0}, 0.0f, WHITE);
 
-    patch_info = (NPatchInfo) {(Rectangle) {88, 11, 11, 9}, 6, 5, 6, 5, NPATCH_NINE_PATCH};
-
-    DrawTextureNPatch(atlas, patch_info, inflate_rectangle((Rectangle) {
+    DrawTextureNPatch(visual_style.texture, visual_style.progressbar_bars[visual_state], inflate_rectangle((Rectangle) {
             .x = control.rectangle.x,
             .y = control.rectangle.y,
             .width = control.rectangle.width * progress_bar.progress,
@@ -360,7 +295,7 @@ raylib_draw_treeview_node(t_control control, e_visual_state visual_state, t_node
     float x = control.rectangle.x + (raylib_listbox_get_item_height() * subdepth);
     float y = control.rectangle.y + (raylib_listbox_get_item_height() * index);
 
-    Vector2 text_bounds = MeasureTextEx(font, node.text, font.baseSize, 0.0f);
+    Vector2 text_bounds = MeasureTextEx(visual_style.font, node.text, visual_style.font.baseSize, 0.0f);
 
     Rectangle node_rectangle = (Rectangle) {
             .x = x,
@@ -369,8 +304,17 @@ raylib_draw_treeview_node(t_control control, e_visual_state visual_state, t_node
             .height = raylib_listbox_get_item_height(),
     };
 
-    DrawTextEx(font, node.text, (Vector2) {
+    DrawTextEx(visual_style.font, node.text, (Vector2) {
             node_rectangle.x + node_rectangle.width / 2 - text_bounds.x / 2,
             node_rectangle.y + node_rectangle.height / 2 - text_bounds.y / 2,
-    }, font.baseSize, 0.0f, control.is_enabled ? BLACK : (Color) {109, 109, 109, 255});
+    }, visual_style.font.baseSize, 0.0f, control.is_enabled ? BLACK : (Color) {109, 109, 109, 255});
+}
+
+void raylib_set_visual_style(t_visual_style _visual_style) {
+    visual_style = _visual_style;
+}
+
+void raylib_unload_visual_style(void) {
+    UnloadTexture(visual_style.texture);
+    UnloadFont(visual_style.font);
 }
