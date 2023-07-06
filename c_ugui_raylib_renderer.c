@@ -153,10 +153,10 @@ void raylib_draw_textbox(t_control control, e_visual_state visual_state, t_textb
 }
 
 void raylib_draw_slider(t_control control, e_visual_state visual_state, t_slider slider) {
-    const float track_thickness = 4.0f;
-    const float thumb_width = 11.0f; // dimensions are 11x9, but for some reason raylib misses the last row of pixels
-    const float thumb_height = 19.0f;
     const int32_t is_horizontal = control.rectangle.width > control.rectangle.height;
+    const float thumb_width = 11.0f;
+    const float thumb_height = 19.0f;
+    const float track_thickness = 4.0f;
 
     Rectangle track_rectangle;
 
@@ -175,6 +175,7 @@ void raylib_draw_slider(t_control control, e_visual_state visual_state, t_slider
                 .height = control.rectangle.height,
         };
     }
+    SetTextureFilter(visual_style.texture, TEXTURE_FILTER_POINT);
     DrawTextureNPatch(visual_style.texture, visual_style.slider_tracks[visual_state], track_rectangle, (Vector2) {0},
                       0.0f, WHITE);
 
@@ -190,13 +191,13 @@ void raylib_draw_slider(t_control control, e_visual_state visual_state, t_slider
         };
     } else {
         thumb_dest_rectangle = (Rectangle) {
-                control.rectangle.x + control.rectangle.width / 2 - thumb_height / 2 -
-                1,// TODO: this alignment hack exists due to raylib incorrectly drawing the thumb image
+                control.rectangle.x + control.rectangle.width / 2 - thumb_height / 2,
                 control.rectangle.y + (control.rectangle.height * slider.value) - thumb_width / 2,
                 thumb_height,
                 thumb_width
         };
     }
+
     DrawTexturePro(visual_style.texture, is_horizontal ? visual_style.slider_horizontal_thumbs[visual_state]
                                                        : visual_style.slider_vertical_thumbs[visual_state],
                    thumb_dest_rectangle, (Vector2) {0}, 0.0f, WHITE);
