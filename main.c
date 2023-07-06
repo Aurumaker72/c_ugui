@@ -73,8 +73,10 @@ t_visual_style get_windows_11_visual_style() {
     t_visual_style visual_style = get_windows_10_visual_style();
 
     UnloadTexture(visual_style.texture);
+    UnloadFont(visual_style.font);
 
     visual_style.texture = LoadTexture("assets/windows-11.png");
+    visual_style.font = LoadFontEx("assets/segoeui.ttf", 16, 0, 250);
     visual_style.list_item_height = visual_style.font.baseSize + 8.0f;
 
     visual_style.background_color = (Color) {243, 243, 243, 255};
