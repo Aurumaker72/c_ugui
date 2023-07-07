@@ -106,6 +106,8 @@ t_visual_style get_windows_11_visual_style() {
 int main(void) {
     SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_MSAA_4X_HINT);
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, WINDOW_TITLE);
+    SetTargetFPS(GetMonitorRefreshRate(GetCurrentMonitor()));
+
 
     t_renderer renderer = (t_renderer) {
             .draw_button = raylib_draw_button,
