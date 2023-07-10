@@ -142,7 +142,7 @@ float gui_slider(t_control, t_slider);
 
 t_listbox gui_listbox(t_control, t_listbox);
 
-void gui_progresbar(t_control, t_progressbar);
+void gui_progressbar(t_control, t_progressbar);
 
 t_treeview gui_treeview(t_control, t_treeview);
 

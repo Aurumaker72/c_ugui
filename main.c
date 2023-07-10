@@ -144,38 +144,30 @@ int main(void) {
             .items_length = sizeof(strings) / sizeof(strings[0]),
             .selected_index = 0,
     };
+    t_node nodes[100] = {0};
     t_treeview treeview = (t_treeview) {
             .root_node = (t_node) {
                     .text = "Root",
-                    .children_length = 3,
+                    .children_length = sizeof(nodes) / sizeof(nodes[0]),
                     .is_expanded = 1,
-                    .children = (t_node[]) {
-                            (t_node) {
-                                    .text = "Root 1",
-                                    .is_expanded = 1,
-                            },
-                            (t_node) {
-                                    .text = "Root 2",
-                                    .is_expanded = 1,
-                            },
-                            (t_node) {
-                                    .text = "I'm an alcoholic",
-                                    .children_length = 2,
-                                    .is_expanded = 1,
-                                    .children = (t_node[]) {
-                                            (t_node) {
-                                                    .text = "I'm an alcoholic 2",
-                                                    .is_expanded = 1,
-                                            },
-                                            (t_node) {
-                                                    .text = "I'm an alcoholic 3",
-                                                    .is_expanded = 1,
-                                            },
-                                    }
-                            }
-                    }
             }
     };
+
+    for (int i = 0; i < sizeof(nodes) / sizeof(nodes[0]); ++i) {
+        nodes[i] = (t_node) {
+            .text = "Hi",
+            .children_length = 2,
+            .children = (t_node[]) {
+                    (t_node) {
+                            .text = "Aaadasdads",
+                    },
+                    (t_node) {
+                            .text = "something else",
+                    },
+            }
+        };
+    }
+    treeview.root_node.children = nodes;
 
     while (!WindowShouldClose()) {
         BeginDrawing();
@@ -300,7 +292,7 @@ int main(void) {
                 },
                 .is_enabled = is_checked
         }, listbox);
-        gui_progresbar((t_control) {
+        gui_progressbar((t_control) {
                 .uid = 7,
                 .rectangle = (t_rectangle) {
                         .x = 150,

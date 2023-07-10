@@ -322,9 +322,9 @@ t_listbox gui_listbox(t_control control, t_listbox listbox) {
     return listbox;
 }
 
-void gui_progresbar(t_control control, t_progressbar progress_bar) {
+void gui_progressbar(t_control control, t_progressbar progressbar) {
     renderer->draw_progressbar(control, control.is_enabled ? e_visual_state_normal : e_visual_state_disabled,
-                               progress_bar);
+                               progressbar);
 }
 
 void gui_draw_node(t_control control, e_visual_state visual_state, t_node *node, size_t index, size_t subdepth,
