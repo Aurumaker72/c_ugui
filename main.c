@@ -14,7 +14,6 @@ t_visual_style get_windows_10_visual_style() {
     visual_style.texture = LoadTexture("assets/windows-10.png");
     visual_style.font = LoadFontEx("assets/micross.ttf", 14, 0, 250);
 
-    visual_style.background_color = (Color) {240, 240, 240, 255};
     visual_style.list_item_height = visual_style.font.baseSize + 4.0f;
 
     visual_style.raised_frames[0] = (NPatchInfo) {(Rectangle) {1, 1, 11, 9}, 6, 5, 6, 5, NPATCH_NINE_PATCH};
@@ -62,8 +61,18 @@ t_visual_style get_windows_10_visual_style() {
     visual_style.list_text_color[2] = WHITE;
     visual_style.list_text_color[3] = (Color) {109, 109, 109, 255};
 
+
+    visual_style.titlebars[0] = (NPatchInfo) {(Rectangle) {19,31,9,9}, 5,5,5,5, NPATCH_NINE_PATCH};
+    visual_style.titlebars[1] = (NPatchInfo) {(Rectangle) {19,31,9,9}, 5,5,5,5, NPATCH_NINE_PATCH};
+    visual_style.titlebars[2] = (NPatchInfo) {(Rectangle) {19,31,9,9}, 5,5,5,5, NPATCH_NINE_PATCH};
+    visual_style.titlebars[3] = (NPatchInfo) {(Rectangle) {19,31,9,9}, 5,5,5,5, NPATCH_NINE_PATCH};
+
+    visual_style.background = (NPatchInfo) {(Rectangle) {30,31,9,9}, 5,5,5,5, NPATCH_NINE_PATCH};
+
     visual_style.list_content_padding = (Vector2) {4, 0};
     visual_style.slider_thumb_size = (Vector2) {11, 19};
+
+    visual_style.titlebar_height = 31.0f;
 
     return visual_style;
 }
@@ -78,8 +87,6 @@ t_visual_style get_windows_11_visual_style() {
     visual_style.texture = LoadTexture("assets/windows-11.png");
     visual_style.font = LoadFontEx("assets/segoeui.ttf", 16, 0, 250);
     visual_style.list_item_height = visual_style.font.baseSize + 8.0f;
-
-    visual_style.background_color = (Color) {243, 243, 243, 255};
 
     visual_style.list_text_color[0] = BLACK;
     visual_style.list_text_color[1] = RED; // unused

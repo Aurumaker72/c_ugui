@@ -327,7 +327,14 @@ void raylib_unload_visual_style(void) {
 }
 
 void raylib_clear() {
-    ClearBackground(visual_style.background_color);
+    ClearBackground(PURPLE);
+    DrawTextureNPatch(visual_style.texture, visual_style.background, (Rectangle) {
+            .x = 0,
+            .y = 0,
+            .width = GetScreenWidth(),
+            .height = GetScreenHeight(),
+    }, (Vector2) {0}, 0.0f, WHITE);
+
 }
 
 float raylib_listbox_get_item_height() {
