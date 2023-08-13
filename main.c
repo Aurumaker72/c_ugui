@@ -78,13 +78,23 @@ t_visual_style get_windows_10_visual_style() {
 }
 
 t_visual_style get_windows_11_visual_style() {
+    t_visual_style visual_style = get_windows_10_visual_style();
+
+    UnloadTexture(visual_style.texture);
+
+    visual_style.texture = LoadTexture("assets/windows-11.png");
+
+    return visual_style;
+}
+
+t_visual_style get_winui_visual_style() {
 
     t_visual_style visual_style = get_windows_10_visual_style();
 
     UnloadTexture(visual_style.texture);
     UnloadFont(visual_style.font);
 
-    visual_style.texture = LoadTexture("assets/windows-11.png");
+    visual_style.texture = LoadTexture("assets/winui.png");
     visual_style.font = LoadFontEx("assets/segoeui.ttf", 16, 0, 250);
     visual_style.list_item_height = visual_style.font.baseSize + 8.0f;
 
@@ -240,6 +250,21 @@ int main(void) {
         })) {
             raylib_unload_visual_style();
             raylib_set_visual_style(get_windows_11_visual_style());
+        }
+        if (gui_button((t_control) {
+                .uid = 12312983,
+                .rectangle = (t_rectangle) {
+                        .x = 230,
+                        .y = 10,
+                        . width = 90,
+                        .height = 23
+                },
+                .is_enabled = 1
+        }, (t_button) {
+                .text = "WinUI"
+        })) {
+            raylib_unload_visual_style();
+            raylib_set_visual_style(get_winui_visual_style());
         }
 
         is_checked = gui_togglebutton((t_control) {
